@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   BrowserRouter as Router, 
   Routes, 
@@ -9,7 +9,7 @@ import {
   useLocation,
   NavLink 
 } from "react-router-dom";
-import { Menu, X, Instagram, Mail, ChevronRight, ArrowLeft } from "lucide-react";
+import { Menu, X, Instagram, ArrowLeft } from "lucide-react";
 
 // --- TYPES ET DONNÉES ---
 interface Artwork {
