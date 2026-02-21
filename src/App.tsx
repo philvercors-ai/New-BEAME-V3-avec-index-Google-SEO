@@ -13,7 +13,7 @@ import { Menu, X, Instagram, ArrowLeft } from "lucide-react";
 
 // --- DONNÉES ---
 const ARTWORKS = [
-  { id: 8, slug: "chaos", title: "Chaos originel", category: "abstrait", image: "/images/chaos-originel.webp", technique: "Huile", support: "Toile de lin", description: "L’instant suspendu où la peinture se fait relief pour donner corps à l’invisible.", price: "500€", dimensions: "50x61cm" },
+  { id: 8, slug: "Chaos-originel", title: "Chaos originel", category: "abstrait", image: "/images/Chaos-originel.webp", technique: "Huile", support: "Toile de lin", description: "Là où la peinture s'arrache au chaos pour donner corps à l'invisible.", price: "500€", dimensions: "50x61cm" },
   { id: 9, slug: "L_or-et-l_azur", title: "L'or et l'azur", category: "mer & océan", image: "/images/L_or-et-l_azur.webp", technique: "Huile", support: "toile de lin", description: "Le ressac d'un soleil qui s'éteint dans les éclats de la matière.", price: "500€", dimensions: "50x61cm" },
   { id: 10, slug: "La-Légèreté-de-l'instant", title: "La légèreté de l'instant", category: "abstrait", image: "/images/La-Légèreté-de-l’Instant.webp", technique: "Huile", support: "toile de lin", description: "Un instant sacré se suspend entre deux mondes.", price: "500€", dimensions: "50x61cm" },
   
