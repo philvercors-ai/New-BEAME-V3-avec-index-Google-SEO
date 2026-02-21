@@ -725,21 +725,16 @@ body {
 .fade-in {
   animation: fadeIn 0.6s ease-out;
 }
-/* Animation de zoom très lent pour l'image d'accueil */
-@keyframes slowZoom {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+
+
+/* Définition de l'animation de zoom lent */
+@keyframes slow-zoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
 }
 
 .animate-slow-zoom {
-  animation: slowZoom 30s ease-in-out infinite;
+  animation: slow-zoom 20s infinite alternate ease-in-out;
 }
 
 /* Optionnel : pour que les textes apparaissent en fondu au chargement */
