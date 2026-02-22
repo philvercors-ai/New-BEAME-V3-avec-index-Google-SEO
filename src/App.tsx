@@ -19,9 +19,9 @@ const ARTWORKS = [
   
   
   { id: 6, slug: "elevation", title: "Élévation", category: "abstrait", image: "/images/elevation.webp", technique: "Acrylique", support: "carton entoilé", description: "Une ascension chromatique entre terre et ciel.", price: "300€", dimensions: "25x40cm" },
+   { id: 3, slug: "vendee-globe-1", title: "Vendée Globe 1", category: "mer & océan", image: "/images/vg1.jpeg", technique: "Huile", support: "toile de lin", description: "L'odyssée chromatique entre ciel de feu et mer d'azur.", price: "1200€", dimensions: "80x100cm" },
   { id: 2, slug: "vendee-globe-2", title: "Vendée Globe 2", category: "mer & océan", image: "/images/vg2.jpeg", technique: "Huile", support: "toile de lin", description: "Marine puissante évoquant la course au large.", price: "950€", dimensions: "70x90cm" },
-  { id: 3, slug: "vendee-globe-1", title: "Vendée Globe 1", category: "mer & océan", image: "/images/vg1.jpeg", technique: "Huile", support: "toile de lin", description: "L'odyssée chromatique entre ciel de feu et mer d'azur.", price: "1200€", dimensions: "80x100cm" },
-  { id: 1, slug: "o", title: "Ô", category: "abstrait", image: "/images/o.jpg", technique: "Huile", support: "toile de lin", description: "Méditation sur la forme circulaire.", price: "850€", dimensions: "60x100cm" },
+   { id: 1, slug: "o", title: "Ô", category: "abstrait", image: "/images/o.jpg", technique: "Huile", support: "contre-plaqué", description: "Méditation sur la forme circulaire.", price: "850€", dimensions: "60x100cm" },
   { id: 4, slug: "le-chant-des-cigales", title: "Le chant des cigales", category: "paysage", image: "/images/Le-chant-des-cigales.webp", technique: "Huile", support: "toile de lin", description: "Évocation de la chaleur provençale.", price: "750€", dimensions: "50x70cm" },
   { id: 5, slug: "mer-emeraude", title: "Mer Émeraude", category: "mer & océan", image: "/images/mer-emeraude.webp", technique: "Huile", support: "toile de lin", description: "L'éclat cristallin d'un rivage sauvage.", price: "890€", dimensions: "65x85cm"},
 ];
@@ -66,14 +66,14 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen }: any) => (
 // --- PAGE ACCUEIL ---
 const AccueilPage = () => (
   <div className="relative h-screen flex items-center justify-center overflow-hidden">
-    <title>BÉAME | Artiste Peintre à Vallon Pont d'Arc</title>
+    <title>BÉAME | Artiste Peintre à Saint Remèze - Ardèche</title>
     <div className="absolute inset-0 z-0">
-      <img src="/images/o.jpg" alt="Peinture BÉAME" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]"></div>
+      <img src="images/Chaos-originel.webp" alt="Peinture BÉAME" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
+      <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]"></div>
     </div>
     <div className="relative z-10 text-center px-4">
       <h1 className="text-7xl md:text-9xl font-serif mb-6 tracking-tighter text-gray-900">BÉAME</h1>
-      <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre Professionnel • Vallon Pont d'Arc</h2>
+      <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre Professionnel • Saint Remèze - Ardèche</h2>
       <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
         <Link to="/galerie" className="px-10 py-4 bg-gray-900 text-white uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
           Découvrir la Galerie
@@ -94,7 +94,7 @@ const BioPage = () => (
     <div className="grid md:grid-cols-5 gap-12 items-center">
      <div className="md:col-span-3 space-y-6 text-lg text-left">
         <p className="font-serif italic text-2xl text-amber-800">Le geste et la lumière</p>
-        <p>BÉAME explore la frontière entre figuration et abstraction depuis son atelier de Vallon Pont d'Arc.</p>
+        <p>BÉAME explore la frontière entre figuration et abstraction depuis son atelier de Saint Remèze.</p>
         <p>Ses œuvres sont une quête de la lumière qui sculpte les paysages minéraux de l'Ardèche, traduisant l'émotion brute par le couteau et la matière.</p>
       </div>   
         <div className="md:col-span-2">
@@ -237,7 +237,7 @@ export default function App() {
           </Routes>
         </main>
         <footer className="bg-gray-900 text-white py-12 text-center">
-          <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Vallon Pont d'Arc</p>
+          <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Saint Remèze - Ardèche</p>
         </footer>
       </div>
     </Router>
