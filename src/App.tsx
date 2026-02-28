@@ -300,13 +300,20 @@ const ContactPage = () => {
     setStatus("SENDING");
     const formData = new FormData(e.currentTarget);
     try {
-      await fetch("/", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        // @ts-ignore
-        body: new URLSearchParams(formData).toString(),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "1ae5379f-638f-4b3d-8a04-5b305895b0bf",
+          subject: formData.get("subject") || "Message depuis beame.art",
+          name: formData.get("name"),
+          email: formData.get("email"),
+          message: formData.get("message"),
+          from_name: "Site BÉAME",
+        }),
       });
-      setStatus("SUCCESS");
+      const data = await res.json();
+      if (data.success) { setStatus("SUCCESS"); } else { setStatus("ERROR"); }
     } catch { setStatus("ERROR"); }
   };
 
@@ -326,8 +333,7 @@ const ContactPage = () => {
             <Link to="/galerie" className="mt-8 inline-block border-b border-black pb-1 text-[10px] uppercase tracking-widest font-bold">Retourner à la galerie</Link>
           </div>
         ) : (
-          <form name="contact" method="POST" data-netlify="true" onSubmit={handleSubmit} className="space-y-8 text-left">
-            <input type="hidden" name="form-name" value="contact" />
+          <form onSubmit={handleSubmit} className="space-y-8 text-left">
             <input name="subject" defaultValue={sujetPredefini ? `Acquisition : ${sujetPredefini}` : ""} placeholder="SUJET" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest font-bold" />
             <div className="grid md:grid-cols-2 gap-8">
               <input name="name" required placeholder="NOM" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest" />
