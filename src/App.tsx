@@ -281,7 +281,14 @@ const InfoImage = () => {
             <p className="flex justify-between"><strong>Technique</strong> <span>{artwork.technique}</span></p>
             <p className="text-3xl font-light text-amber-800 pt-4">{artwork.price}</p>
           </div>
-          <Link to={`/contact?sujet=${encodeURIComponent(artwork.title)}`} className="block text-center w-full bg-gray-900 text-white py-5 font-bold uppercase tracking-widest text-xs">Demander une acquisition</Link>
+          <Link
+            to={`/contact?sujet=${encodeURIComponent("Acquisition : " + artwork.title)}&message=${encodeURIComponent(
+              `Bonjour,\n\nJe suis intéressé(e) par l'acquisition de l'œuvre suivante :\n\n• Titre : ${artwork.title}\n• Technique : ${artwork.technique} sur ${artwork.support}\n• Dimensions : ${artwork.dimensions}\n• Prix : ${artwork.price}\n\nPourriez-vous me donner plus d'informations sur les modalités d'acquisition ?\n\nCordialement,`
+            )}`}
+            className="block text-center w-full bg-gray-900 text-white py-5 font-bold uppercase tracking-widest text-xs"
+          >
+            Demander une acquisition
+          </Link>
         </div>
       </div>
     </div>
@@ -294,6 +301,7 @@ const ContactPage = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const sujetPredefini = query.get('sujet');
+  const messagePredefini = query.get('message');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -339,7 +347,7 @@ const ContactPage = () => {
               <input name="name" required placeholder="NOM" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest" />
               <input name="email" required type="email" placeholder="EMAIL" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest" />
             </div>
-            <textarea name="message" required rows={5} placeholder="VOTRE MESSAGE" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 resize-none text-[10px] tracking-widest" />
+            <textarea name="message" required rows={5} defaultValue={messagePredefini || ""} placeholder="VOTRE MESSAGE" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 resize-none text-[10px] tracking-widest" />
             <button type="submit" disabled={status === "SENDING"} className="bg-gray-900 text-white px-12 py-4 uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
               {status === "SENDING" ? "Envoi..." : "Envoyer le message"}
             </button>
