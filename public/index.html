@@ -1,43 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta name="theme-color" content="#b45309" />
+    <meta name="description" content="Découvrez les œuvres de BÉAME, artiste peintre professionnelle à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines." />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="BÉAME" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="canonical" href="https://beame.art/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="BÉAME - Artiste Peintre" />
+    <meta property="og:title" content="BÉAME | Artiste Peintre à Saint Remèze - Ardèche" />
+    <meta property="og:description" content="Découvrez les œuvres de BÉAME, artiste peintre professionnelle à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines." />
+    <meta property="og:image" content="https://beame.art/images/Chaos-originel.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://beame.art/" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BÉAME | Artiste Peintre à Saint Remèze - Ardèche" />
+    <meta name="twitter:description" content="Découvrez les œuvres de BÉAME, artiste peintre professionnelle à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines." />
+    <meta name="twitter:image" content="https://beame.art/images/Chaos-originel.webp" />
+
+    <!-- Données structurées JSON-LD : Artiste -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "BÉAME",
+      "jobTitle": "Artiste Peintre",
+      "url": "https://beame.art",
+      "sameAs": ["https://www.instagram.com/beame.arts"],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Saint Remèze",
+        "addressRegion": "Ardèche",
+        "addressCountry": "FR"
+      },
+      "description": "Artiste peintre professionnelle basée à Saint Remèze en Ardèche. Spécialisée dans la peinture à l'huile et l'acrylique, paysages, abstraits et marines."
+    }
+    </script>
+
+    <title>BÉAME | Artiste Peintre à Saint Remèze - Ardèche</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <p>BÉAME - Artiste Peintre à Saint Remèze, Ardèche. Peintures originales à l'huile et à l'acrylique. Veuillez activer JavaScript pour accéder au site complet.</p>
+    </noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
