@@ -13,15 +13,15 @@ import { Menu, X, ArrowLeft, Instagram } from "lucide-react";
 
 // --- DONNÉES ---
 const ARTWORKS = [
-  { id: 8, slug: "Chaos-originel", title: "Chaos originel", category: "abstrait", image: "/images/Chaos-originel.webp", technique: "Huile", support: "Toile de lin", description: "Là où la peinture s'arrache au chaos pour donner corps à l'invisible.", price: "500€", dimensions: "50x61cm" },
-  { id: 9, slug: "L_or-et-l_azur", title: "L'or et l'azur", category: "mer & océan", image: "/images/L_or-et-l_azur.webp", technique: "Huile", support: "toile de lin", description: "Le ressac d'un soleil qui s'éteint dans les éclats de la matière.", price: "500€", dimensions: "50x61cm" },
-  { id: 10, slug: "La-Légèreté-de-l'instant", title: "La légèreté de l'instant", category: "abstrait", image: "/images/La-Légèreté-de-l'Instant.webp", technique: "Huile", support: "toile de lin", description: "Un instant sacré se suspend entre deux mondes.", price: "500€", dimensions: "50x61cm" },
-  { id: 6, slug: "elevation", title: "Élévation", category: "abstrait", image: "/images/elevation.webp", technique: "Acrylique", support: "carton entoilé", description: "Une ascension chromatique entre terre et ciel.", price: "300€", dimensions: "25x40cm" },
-  { id: 3, slug: "vendee-globe-1", title: "Vendée Globe 1", category: "mer & océan", image: "/images/vg1.jpeg", technique: "Huile", support: "toile de lin", description: "L'odyssée chromatique entre ciel de feu et mer d'azur.", price: "1200€", dimensions: "80x100cm" },
-  { id: 2, slug: "vendee-globe-2", title: "Vendée Globe 2", category: "mer & océan", image: "/images/vg2.jpeg", technique: "Huile", support: "toile de lin", description: "Marine puissante évoquant la course au large.", price: "950€", dimensions: "70x90cm" },
-  { id: 1, slug: "o", title: "Ô", category: "abstrait", image: "/images/o.jpg", technique: "Huile", support: "contre-plaqué", description: "Méditation sur la forme circulaire.", price: "850€", dimensions: "60x100cm" },
-  { id: 4, slug: "le-chant-des-cigales", title: "Le chant des cigales", category: "paysage", image: "/images/Le-chant-des-cigales.webp", technique: "Huile", support: "toile de lin", description: "Évocation de la chaleur provençale.", price: "750€", dimensions: "50x70cm" },
-  { id: 5, slug: "mer-emeraude", title: "Mer Émeraude", category: "mer & océan", image: "/images/mer-emeraude.webp", technique: "Huile", support: "toile de lin", description: "L'éclat cristallin d'un rivage sauvage.", price: "890€", dimensions: "65x85cm"},
+  { id: 8, slug: "Chaos-originel", title: "Chaos originel", category: "abstrait", image: "/images/Chaos-originel.webp", technique: "Huile", support: "Toile de lin", description: "Là où la peinture s'arrache au chaos pour donner corps à l'invisible.", cartel: "", price: "500€", dimensions: "50x61cm" },
+  { id: 9, slug: "L_or-et-l_azur", title: "L'or et l'azur", category: "mer & océan", image: "/images/L_or-et-l_azur.webp", technique: "Huile", support: "toile de lin", description: "Le ressac d'un soleil qui s'éteint dans les éclats de la matière.", cartel: "", price: "500€", dimensions: "50x61cm" },
+  { id: 10, slug: "La-Legerete-de-linstant", title: "La légèreté de l'instant", category: "abstrait", image: "/images/La-Legerete-de-linstant.webp", technique: "Huile", support: "toile de lin", description: "Un instant sacré se suspend entre deux mondes.", cartel: "", price: "500€", dimensions: "50x61cm" },
+  { id: 6, slug: "elevation", title: "Élévation", category: "abstrait", image: "/images/elevation.webp", technique: "Acrylique", support: "carton entoilé", description: "Une ascension chromatique entre terre et ciel.", cartel: "", price: "300€", dimensions: "25x40cm" },
+  { id: 3, slug: "vendee-globe-1", title: "Vendée Globe 1", category: "mer & océan", image: "/images/vg1.jpeg", technique: "Huile", support: "toile de lin", description: "L'odyssée chromatique entre ciel de feu et mer d'azur.", cartel: "", price: "1200€", dimensions: "80x100cm" },
+  { id: 2, slug: "vendee-globe-2", title: "Vendée Globe 2", category: "mer & océan", image: "/images/vg2.jpeg", technique: "Huile", support: "toile de lin", description: "Marine puissante évoquant la course au large.", cartel: "", price: "950€", dimensions: "70x90cm" },
+  { id: 1, slug: "o", title: "Ô", category: "abstrait", image: "/images/o.jpg", technique: "Huile", support: "contre-plaqué", description: "Méditation sur la forme circulaire.", cartel: "", price: "850€", dimensions: "60x100cm" },
+  { id: 4, slug: "le-chant-des-cigales", title: "Le chant des cigales", category: "paysage", image: "/images/Le-chant-des-cigales.webp", technique: "Huile", support: "toile de lin", description: "Évocation de la chaleur provençale.", cartel: "", price: "750€", dimensions: "50x70cm" },
+  { id: 5, slug: "mer-emeraude", title: "Mer Émeraude", category: "mer & océan", image: "/images/mer-emeraude.webp", technique: "Huile", support: "toile de lin", description: "L'éclat cristallin d'un rivage sauvage.", cartel: "", price: "890€", dimensions: "65x85cm"},
 ];
 
 // --- COMPOSANT SEO ---
@@ -276,6 +276,9 @@ const InfoImage = () => {
           <div><span className="text-amber-600 text-[10px] font-bold uppercase tracking-widest">{artwork.category}</span>
           <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mt-2 italic">{artwork.title}</h1></div>
           <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line border-t pt-6">{artwork.description}</p>
+          {artwork.cartel && (
+            <p className="text-gray-500 text-xs leading-relaxed whitespace-pre-line italic border-t pt-4">{artwork.cartel}</p>
+          )}
           <div className="space-y-3 text-gray-600 border-t pt-6 text-[11px] uppercase tracking-wide">
             <p className="flex justify-between"><strong>Dimensions</strong> <span>{artwork.dimensions}</span></p>
             <p className="flex justify-between"><strong>Technique</strong> <span>{artwork.technique}</span></p>
