@@ -10,19 +10,9 @@ import {
   NavLink
 } from "react-router-dom";
 import { Menu, X, ArrowLeft, Instagram } from "lucide-react";
-
-// --- DONNÉES ---
-const ARTWORKS = [
-  { id: 8, slug: "Chaos-originel", title: "Chaos originel", category: "abstrait", image: "/images/Chaos-originel.webp", technique: "Huile", support: "Toile de lin", description: "Là où la peinture s'arrache au chaos pour donner corps à l'invisible.", cartel: "", price: "500€", dimensions: "50x61cm" },
-  { id: 9, slug: "L_or-et-l_azur", title: "L'or et l'azur", category: "mer & océan", image: "/images/L_or-et-l_azur.webp", technique: "Huile", support: "toile de lin", description: "Le ressac d'un soleil qui s'éteint dans les éclats de la matière.", cartel: "", price: "500€", dimensions: "50x61cm" },
-  { id: 10, slug: "La-Legerete-de-linstant", title: "La légèreté de l'instant", category: "abstrait", image: "/images/La-Legerete-de-linstant.webp", technique: "Huile", support: "toile de lin", description: "Un instant sacré se suspend entre deux mondes.", cartel: "", price: "500€", dimensions: "50x61cm" },
-  { id: 6, slug: "elevation", title: "Élévation", category: "abstrait", image: "/images/elevation.webp", technique: "Acrylique", support: "carton entoilé", description: "Une ascension chromatique entre terre et ciel.", cartel: "", price: "300€", dimensions: "25x40cm" },
-  { id: 3, slug: "vendee-globe-1", title: "Vendée Globe 1", category: "mer & océan", image: "/images/vg1.jpeg", technique: "Huile", support: "toile de lin", description: "L'odyssée chromatique entre ciel de feu et mer d'azur.", cartel: "", price: "1200€", dimensions: "80x100cm" },
-  { id: 2, slug: "vendee-globe-2", title: "Vendée Globe 2", category: "mer & océan", image: "/images/vg2.jpeg", technique: "Huile", support: "toile de lin", description: "Marine puissante évoquant la course au large.", cartel: "", price: "950€", dimensions: "70x90cm" },
-  { id: 1, slug: "o", title: "Ô", category: "abstrait", image: "/images/o.jpg", technique: "Huile", support: "contre-plaqué", description: "Méditation sur la forme circulaire.", cartel: "", price: "850€", dimensions: "60x100cm" },
-  { id: 4, slug: "le-chant-des-cigales", title: "Le chant des cigales", category: "paysage", image: "/images/Le-chant-des-cigales.webp", technique: "Huile", support: "toile de lin", description: "Évocation de la chaleur provençale.", cartel: "", price: "750€", dimensions: "50x70cm" },
-  { id: 5, slug: "mer-emeraude", title: "Mer Émeraude", category: "mer & océan", image: "/images/mer-emeraude.webp", technique: "Huile", support: "toile de lin", description: "L'éclat cristallin d'un rivage sauvage.", cartel: "", price: "890€", dimensions: "65x85cm"},
-];
+import { supabase } from "./supabaseClient";
+import type { Artwork } from "./supabaseClient";
+import AdminPage from "./AdminPage";
 
 // --- COMPOSANT SEO ---
 const SITE_URL = "https://beame.art";
@@ -38,7 +28,7 @@ interface SEOProps {
 
 const SEO = ({ title, description, image, path, jsonLd }: SEOProps) => {
   const absUrl = `${SITE_URL}${path}`;
-  const absImage = `${SITE_URL}${image || DEFAULT_IMAGE}`;
+  const absImage = image?.startsWith('http') ? image : `${SITE_URL}${image || DEFAULT_IMAGE}`;
   const jsonLdString = jsonLd ? JSON.stringify(jsonLd) : null;
 
   useEffect(() => {
@@ -178,8 +168,19 @@ const BioPage = () => (
 
 // --- PAGE GALERIE ---
 const GaleriePage = () => {
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("tous");
-  const filteredArt = ARTWORKS.filter(art => selectedFilter === "tous" || art.category === selectedFilter);
+
+  useEffect(() => {
+    supabase.from('artworks').select('*').order('sort_order', { ascending: true }).then(({ data }) => {
+      setArtworks(data || []);
+      setLoading(false);
+    });
+  }, []);
+
+  const filteredArt = artworks.filter(art => selectedFilter === "tous" || art.category === selectedFilter);
+
   return (
     <div className="pt-32 pb-20 max-w-7xl mx-auto px-4">
       <SEO
@@ -187,18 +188,18 @@ const GaleriePage = () => {
         description="Galerie de peintures originales de BÉAME : tableaux abstraits, paysages ardéchois et marines. Huile et acrylique sur toile de lin. Œuvres disponibles à l'achat."
         image="/images/Chaos-originel.webp"
         path="/galerie"
-        jsonLd={{
+        jsonLd={artworks.length > 0 ? {
           "@context": "https://schema.org",
           "@type": "ItemList",
           "name": "Galerie BÉAME - Peintures originales",
           "description": "Collection de peintures originales de l'artiste BÉAME",
-          "itemListElement": ARTWORKS.map((art, index) => ({
+          "itemListElement": artworks.map((art, index) => ({
             "@type": "ListItem",
             "position": index + 1,
             "name": art.title,
             "url": `${SITE_URL}/galerie/${art.slug}`
           }))
-        }}
+        } : undefined}
       />
       <h1 className="text-5xl font-serif text-center mb-12">Galerie d'Art</h1>
       <div className="flex justify-center gap-4 mb-16 text-[10px] uppercase tracking-[0.2em] flex-wrap">
@@ -206,21 +207,36 @@ const GaleriePage = () => {
           <button key={filter} onClick={() => setSelectedFilter(filter)} className={`pb-2 transition-all ${selectedFilter === filter ? "text-amber-700 border-b-2 border-amber-700 font-bold" : "text-gray-400 hover:text-gray-900"}`}>{filter}</button>
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-        {filteredArt.map((art) => (
-          <Link to={`/galerie/${art.slug}`} key={art.id} className="group">
-            <article>
-              <div className="relative overflow-hidden aspect-[4/5] bg-gray-100 shadow-md">
-                <img src={art.image} alt={`${art.title} - ${art.technique} sur ${art.support} par BÉAME`} className="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" />
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[4/5] bg-gray-100" />
+              <div className="mt-6 space-y-3 text-center">
+                <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto" />
+                <div className="h-3 bg-gray-100 rounded w-1/2 mx-auto" />
               </div>
-              <div className="mt-6 text-center">
-                <h2 className="text-xl font-serif italic text-gray-900">{art.title}</h2>
-                <p className="text-gray-400 text-[10px] mt-2 uppercase tracking-widest font-medium">{art.dimensions} • {art.price}</p>
-              </div>
-            </article>
-          </Link>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {filteredArt.map((art) => (
+            <Link to={`/galerie/${art.slug}`} key={art.id} className="group">
+              <article>
+                <div className="relative overflow-hidden aspect-[4/5] bg-gray-100 shadow-md">
+                  <img src={art.image} alt={`${art.title} - ${art.technique} sur ${art.support} par BÉAME`} className="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" />
+                </div>
+                <div className="mt-6 text-center">
+                  <h2 className="text-xl font-serif italic text-gray-900">{art.title}</h2>
+                  <p className="text-gray-400 text-[10px] mt-2 uppercase tracking-widest font-medium">{art.dimensions} • {art.price}</p>
+                </div>
+              </article>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -228,7 +244,22 @@ const GaleriePage = () => {
 // --- PAGE DÉTAILS ---
 const InfoImage = () => {
   const { slug } = useParams();
-  const artwork = ARTWORKS.find(a => a.slug === slug);
+  const [artwork, setArtwork] = useState<Artwork | null | undefined>(undefined);
+
+  useEffect(() => {
+    supabase.from('artworks').select('*').eq('slug', slug).single().then(({ data }) => {
+      setArtwork(data || null);
+    });
+  }, [slug]);
+
+  if (artwork === undefined) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-gray-200 border-t-amber-700 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!artwork) return <div className="pt-40 text-center">Œuvre non trouvée</div>;
 
   const priceNum = artwork.price.replace(/[^0-9]/g, "");
@@ -245,7 +276,7 @@ const InfoImage = () => {
           "@type": "VisualArtwork",
           "name": artwork.title,
           "description": artwork.description,
-          "image": `${SITE_URL}${artwork.image}`,
+          "image": artwork.image.startsWith('http') ? artwork.image : `${SITE_URL}${artwork.image}`,
           "url": `${SITE_URL}/galerie/${artwork.slug}`,
           "creator": {
             "@type": "Person",
@@ -345,7 +376,7 @@ const ContactPage = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8 text-left">
-            <input name="subject" defaultValue={sujetPredefini ? `Acquisition : ${sujetPredefini}` : ""} placeholder="SUJET" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest font-bold" />
+            <input name="subject" defaultValue={sujetPredefini || ""} placeholder="SUJET" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest font-bold" />
             <div className="grid md:grid-cols-2 gap-8">
               <input name="name" required placeholder="NOM" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest" />
               <input name="email" required type="email" placeholder="EMAIL" className="w-full bg-transparent border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[10px] tracking-widest" />
@@ -366,21 +397,26 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="flex flex-col min-h-screen bg-white">
-        <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<AccueilPage />} />
-            <Route path="/galerie" element={<GaleriePage />} />
-            <Route path="/galerie/:slug" element={<InfoImage />} />
-            <Route path="/bio" element={<BioPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </main>
-        <footer className="bg-gray-900 text-white py-12 text-center">
-          <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Saint Remèze - Ardèche</p>
-        </footer>
-      </div>
+      <Routes>
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={
+          <div className="flex flex-col min-h-screen bg-white">
+            <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<AccueilPage />} />
+                <Route path="/galerie" element={<GaleriePage />} />
+                <Route path="/galerie/:slug" element={<InfoImage />} />
+                <Route path="/bio" element={<BioPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+              </Routes>
+            </main>
+            <footer className="bg-gray-900 text-white py-12 text-center">
+              <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Saint Remèze - Ardèche</p>
+            </footer>
+          </div>
+        } />
+      </Routes>
     </Router>
   );
 }
