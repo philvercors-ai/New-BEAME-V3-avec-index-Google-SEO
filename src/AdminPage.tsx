@@ -43,12 +43,12 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <input
             type="email" required value={email} onChange={e => setEmail(e.target.value)}
-            placeholder="EMAIL"
+            placeholder="EMAIL" autoComplete="email"
             className="w-full border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[11px] tracking-widest bg-transparent"
           />
           <input
             type="password" required value={password} onChange={e => setPassword(e.target.value)}
-            placeholder="MOT DE PASSE"
+            placeholder="MOT DE PASSE" autoComplete="current-password"
             className="w-full border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[11px] tracking-widest bg-transparent"
           />
           {error && <p className="text-red-500 text-[10px] uppercase tracking-widest">{error}</p>}
@@ -105,6 +105,29 @@ const ImageUpload = ({ current, onUpload }: { current: string; onUpload: (url: s
 
 type FormData = Omit<Artwork, 'id'>;
 
+const Field = ({ label, value, onChange, multiline = false, placeholder = '', type = 'text' }: {
+  label: string; value: string | number; onChange: (val: string | number) => void;
+  multiline?: boolean; placeholder?: string; type?: string;
+}) => (
+  <div className="space-y-1">
+    <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">{label}</label>
+    {multiline ? (
+      <textarea
+        rows={3} value={value as string} placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 resize-none text-sm bg-transparent"
+      />
+    ) : (
+      <input
+        type={type} value={type === 'number' ? (value as number) : (value as string) || ''}
+        placeholder={placeholder}
+        onChange={e => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
+        className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent"
+      />
+    )}
+  </div>
+);
+
 const ArtworkForm = ({
   initial, onSave, onCancel,
 }: {
@@ -131,28 +154,6 @@ const ArtworkForm = ({
     await onSave(form);
     setSaving(false);
   };
-
-  const Field = ({ label, field, multiline = false, placeholder = '', type = 'text' }: {
-    label: string; field: keyof FormData; multiline?: boolean; placeholder?: string; type?: string;
-  }) => (
-    <div className="space-y-1">
-      <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">{label}</label>
-      {multiline ? (
-        <textarea
-          rows={3} value={(form[field] as string) || ''} placeholder={placeholder}
-          onChange={e => set(field, e.target.value)}
-          className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 resize-none text-sm bg-transparent"
-        />
-      ) : (
-        <input
-          type={type} value={type === 'number' ? (form[field] as number) : (form[field] as string) || ''}
-          placeholder={placeholder}
-          onChange={e => set(field, type === 'number' ? Number(e.target.value) : e.target.value)}
-          className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent"
-        />
-      )}
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 overflow-y-auto flex items-start justify-center p-4 pt-10">
@@ -193,18 +194,18 @@ const ArtworkForm = ({
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            <Field label="Technique" field="technique" placeholder="ex : Huile" />
-            <Field label="Support" field="support" placeholder="ex : Toile de lin" />
+            <Field label="Technique" value={form.technique} onChange={v => set('technique', v)} placeholder="ex : Huile" />
+            <Field label="Support" value={form.support} onChange={v => set('support', v)} placeholder="ex : Toile de lin" />
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            <Field label="Dimensions" field="dimensions" placeholder="ex : 50x61cm" />
-            <Field label="Prix" field="price" placeholder="ex : 500€" />
+            <Field label="Dimensions" value={form.dimensions} onChange={v => set('dimensions', v)} placeholder="ex : 50x61cm" />
+            <Field label="Prix" value={form.price} onChange={v => set('price', v)} placeholder="ex : 500€" />
           </div>
 
-          <Field label="Description" field="description" multiline />
-          <Field label="Cartel" field="cartel" multiline placeholder="Texte du cartel (optionnel)" />
-          <Field label="Ordre d'affichage" field="sort_order" type="number" />
+          <Field label="Description" value={form.description} onChange={v => set('description', v)} multiline />
+          <Field label="Cartel" value={form.cartel} onChange={v => set('cartel', v)} multiline placeholder="Texte du cartel (optionnel)" />
+          <Field label="Ordre d'affichage" value={form.sort_order} onChange={v => set('sort_order', v)} type="number" />
 
           <div className="flex gap-4 pt-4 border-t">
             <button
