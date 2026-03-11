@@ -362,14 +362,75 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
   );
 };
 
+// ─── Réinitialisation mot de passe ────────────────────────────────────────────
+
+const ResetPasswordForm = () => {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirm) { setError('Les mots de passe ne correspondent pas.'); return; }
+    if (password.length < 8) { setError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
+    setLoading(true);
+    setError('');
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) { setError('Erreur : ' + error.message); setLoading(false); return; }
+    setSuccess(true);
+    setLoading(false);
+    setTimeout(() => supabase.auth.signOut(), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-white p-12 shadow-xl w-full max-w-md">
+        <h1 className="text-3xl font-serif text-center mb-2">BÉAME</h1>
+        <p className="text-center text-gray-400 text-[10px] uppercase tracking-widest mb-10">Nouveau mot de passe</p>
+        {success ? (
+          <p className="text-center text-green-600 text-[11px] uppercase tracking-widest">
+            Mot de passe mis à jour. Redirection...
+          </p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <input
+              type="password" required value={password} onChange={e => setPassword(e.target.value)}
+              placeholder="NOUVEAU MOT DE PASSE"
+              className="w-full border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[11px] tracking-widest bg-transparent"
+            />
+            <input
+              type="password" required value={confirm} onChange={e => setConfirm(e.target.value)}
+              placeholder="CONFIRMER LE MOT DE PASSE"
+              className="w-full border-b border-gray-300 py-3 outline-none focus:border-amber-700 text-[11px] tracking-widest bg-transparent"
+            />
+            {error && <p className="text-red-500 text-[10px] uppercase tracking-widest">{error}</p>}
+            <button
+              type="submit" disabled={loading}
+              className="w-full bg-gray-900 text-white py-4 uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition"
+            >
+              {loading ? 'Enregistrement...' : 'Définir le mot de passe'}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── Page Admin (point d'entrée) ──────────────────────────────────────────────
 
 const AdminPage = () => {
   const [session, setSession] = useState<any>(undefined);
+  const [isRecovery, setIsRecovery] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setIsRecovery(true);
+      setSession(session);
+    });
     return () => subscription.unsubscribe();
   }, []);
 
@@ -381,6 +442,7 @@ const AdminPage = () => {
     );
   }
 
+  if (session && isRecovery) return <ResetPasswordForm />;
   if (!session) return <LoginForm />;
 
   return <ArtworkManager onLogout={() => supabase.auth.signOut()} />;
