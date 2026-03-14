@@ -137,7 +137,7 @@ const AccueilPage = () => (
     </div>
     <div className="relative z-10 text-center px-4">
       <h1 className="text-7xl md:text-9xl font-serif mb-6 tracking-tighter text-gray-900">BÉAME</h1>
-      <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre Professionnel • Saint Remèze - Ardèche</h2>
+      <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre • Saint Remèze - Ardèche</h2>
       <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
         <Link to="/galerie" className="px-10 py-4 bg-gray-900 text-white uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
           Découvrir la Galerie
