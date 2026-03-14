@@ -13,8 +13,9 @@
 4. [Modifier une oeuvre existante](#4-modifier-une-oeuvre-existante)
 5. [Supprimer une oeuvre](#5-supprimer-une-oeuvre)
 6. [Ordre d'affichage dans la galerie](#6-ordre-daffichage-dans-la-galerie)
-7. [Se déconnecter](#7-se-déconnecter)
-8. [Questions fréquentes](#8-questions-fréquentes)
+7. [Modifier le lien Instagram](#7-modifier-le-lien-instagram)
+8. [Se déconnecter](#8-se-déconnecter)
+9. [Questions fréquentes](#9-questions-fréquentes)
 
 ---
 
@@ -142,7 +143,32 @@ Pour modifier l'ordre : éditer chaque oeuvre et changer sa valeur.
 
 ---
 
-## 7. Se déconnecter
+## 7. Modifier le lien Instagram
+
+Il est possible de changer le lien Instagram du site sans faire appel au développeur.
+
+### Etape 1 — Aller dans Paramètres
+
+En haut de la page d'administration, cliquer sur **PARAMÈTRES** (à côté de "Œuvres").
+
+### Etape 2 — Modifier l'URL
+
+Dans le champ **URL Instagram**, remplacer l'adresse actuelle par la nouvelle.
+
+Exemple :
+```
+https://instagram.com/nouveau_compte
+```
+
+### Etape 3 — Enregistrer
+
+Cliquer sur **ENREGISTRER**. Le lien est mis à jour sur le site immédiatement.
+
+> Le lien Instagram apparaît dans le menu de navigation en haut de toutes les pages du site.
+
+---
+
+## 8. Se déconnecter
 
 Cliquer sur **DÉCONNEXION** en haut à droite de la page d'administration.
 
@@ -153,7 +179,7 @@ Vous êtes redirigé vers le formulaire de connexion.
 
 ---
 
-## 8. Questions fréquentes
+## 9. Questions fréquentes
 
 **L'oeuvre n'apparaît pas sur le site après l'avoir ajoutée.**
 > Attendre quelques secondes et rafraîchir la page du site (touche F5 ou Cmd+R).
@@ -195,4 +221,4 @@ Vous êtes redirigé vers le formulaire de connexion.
 
 ---
 
-*Guide rédigé pour beame.art — Mars 2026*
+*Guide rédigé pour beame.art — Mars 2026 — v1.0.0*
