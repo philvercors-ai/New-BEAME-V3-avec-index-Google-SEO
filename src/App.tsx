@@ -160,7 +160,7 @@ const BioPage = () => (
         <p>Ses œuvres sont une quête de la lumière qui sculpte les paysages minéraux de l'Ardèche, traduisant l'émotion brute par le couteau et la matière.</p>
       </div>
       <div className="md:col-span-2">
-        <img src="/images/bea.webp" alt="BÉAME, artiste peintre à Saint Remèze en Ardèche" className="w-full shadow-2xl grayscale" />
+        <img src="/images/bea.webp" alt="BÉAME, artiste peintre à Saint Remèze en Ardèche" className="w-full shadow-2xl grayscale" loading="lazy" />
       </div>
     </div>
   </div>
@@ -226,7 +226,7 @@ const GaleriePage = () => {
             <Link to={`/galerie/${art.slug}`} key={art.id} className="group">
               <article>
                 <div className="relative overflow-hidden aspect-[4/5] bg-gray-100 shadow-md">
-                  <img src={art.image} alt={`${art.title} - ${art.technique} sur ${art.support} par BÉAME`} className="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" />
+                  <img src={art.image} alt={`${art.title} - ${art.technique} sur ${art.support} par BÉAME`} className="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" loading="lazy" />
                 </div>
                 <div className="mt-6 text-center">
                   <h2 className="text-xl font-serif italic text-gray-900">{art.title}</h2>
