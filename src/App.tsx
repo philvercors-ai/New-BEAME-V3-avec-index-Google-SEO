@@ -14,6 +14,11 @@ import { supabase } from "./supabaseClient";
 import type { Artwork } from "./supabaseClient";
 import AdminPage from "./AdminPage";
 
+// --- VERSION
+// v1.0.0 (2026-03-14) — Mise en production : galerie Supabase, SEO, admin CRUD, sitemap dynamique
+// v0.1.0 (2026-03-10) — Version initiale : pages statiques, formulaire Web3Forms, React Router
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.0.0";
+
 // --- COMPOSANT SEO ---
 const SITE_URL = "https://beame.art";
 const DEFAULT_IMAGE = "/images/Chaos-originel.webp";
@@ -346,7 +351,7 @@ const ContactPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: "1ae5379f-638f-4b3d-8a04-5b305895b0bf",
+          access_key: process.env.REACT_APP_WEB3FORMS_KEY || "",
           subject: formData.get("subject") || "Message depuis beame.art",
           name: formData.get("name"),
           email: formData.get("email"),
@@ -413,6 +418,7 @@ export default function App() {
             </main>
             <footer className="bg-gray-900 text-white py-12 text-center">
               <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Saint Remèze - Ardèche</p>
+              <p className="text-gray-700 text-[9px] tracking-widest mt-2">v{APP_VERSION}</p>
             </footer>
           </div>
         } />

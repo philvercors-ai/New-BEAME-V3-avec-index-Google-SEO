@@ -4,6 +4,7 @@ import type { Artwork } from './supabaseClient';
 import { LogOut, Plus, Edit2, Trash2, Upload, X } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.0.0";
 
 const toSlug = (title: string) =>
   title
@@ -73,6 +74,16 @@ const ImageUpload = ({ current, onUpload }: { current: string; onUpload: (url: s
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Seules les images sont acceptées (jpg, png, webp…).');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('L\'image ne doit pas dépasser 10 Mo.');
+      e.target.value = '';
+      return;
+    }
     setUploading(true);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
@@ -350,6 +361,10 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
           </div>
         )}
       </main>
+
+      <footer className="text-center py-6">
+        <p className="text-gray-300 text-[9px] tracking-widest">v{APP_VERSION}</p>
+      </footer>
 
       {/* Modal formulaire */}
       {editTarget && (
