@@ -1,5 +1,7 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -442,6 +444,8 @@ export default function App() {
 
   return (
     <Router>
+      <Analytics />
+      <SpeedInsights />
       <ScrollToTop />
       <Routes>
         <Route path="/admin" element={<AdminPage />} />
