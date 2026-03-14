@@ -418,7 +418,7 @@ export default function App() {
             </main>
             <footer className="bg-gray-900 text-white py-12 text-center">
               <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em]">© 2025 BÉAME - Artiste Peintre Saint Remèze - Ardèche</p>
-              <p className="text-gray-700 text-[9px] tracking-widest mt-2">v{APP_VERSION}</p>
+              <p className="text-gray-500 text-[9px] tracking-widest mt-2">v{APP_VERSION}</p>
             </footer>
           </div>
         } />
