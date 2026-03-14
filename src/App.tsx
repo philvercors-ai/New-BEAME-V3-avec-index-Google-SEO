@@ -295,7 +295,7 @@ const InfoImage = () => {
           }
         }}
       />
-      <Link to="/galerie" className="absolute top-6 left-6 z-[110] flex items-center space-x-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-lg">
+      <Link to="/galerie" className="md:absolute md:top-6 md:left-6 z-[110] flex items-center space-x-2 bg-white/80 backdrop-blur px-4 py-3 md:rounded-full md:shadow-lg border-b border-gray-100 md:border-none">
         <ArrowLeft size={18} />
         <span className="font-bold uppercase tracking-widest text-[10px]">Retour Galerie</span>
       </Link>
