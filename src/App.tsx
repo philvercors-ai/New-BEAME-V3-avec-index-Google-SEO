@@ -12,9 +12,9 @@ import {
 import { Menu, X, ArrowLeft, Instagram } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import type { Artwork } from "./supabaseClient";
+import AdminPage from "./AdminPage";
 
 const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
-import AdminPage from "./AdminPage";
 
 // --- VERSION
 // v1.0.0 (2026-03-14) — Mise en production : galerie Supabase, SEO, admin CRUD, sitemap dynamique
