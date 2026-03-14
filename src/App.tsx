@@ -155,19 +155,49 @@ const BioPage = () => (
   <div className="pt-32 pb-20 max-w-5xl mx-auto px-4">
     <SEO
       title="Biographie | BÉAME - Artiste Peintre en Ardèche"
-      description="Découvrez le parcours de BÉAME, artiste peintre de Saint Remèze en Ardèche. Passionnée par la lumière des paysages minéraux, elle peint au couteau sur toile de lin."
+      description="Découvrez le parcours de BÉAME, artiste peintre en Ardèche. De la danse à la peinture, un voyage chromatique du Vercors à la Normandie jusqu'aux lumières ardéchoises."
       image="/images/bea.webp"
       path="/bio"
     />
-    <h1 className="text-5xl font-serif text-center mb-16">Biographie</h1>
-    <div className="grid md:grid-cols-5 gap-12 items-center">
-     <div className="md:col-span-3 space-y-6 text-lg text-left">
-        <p className="font-serif italic text-2xl text-amber-800">Le geste et la lumière</p>
-        <p>BÉAME explore la frontière entre figuration et abstraction depuis son atelier de Saint Remèze.</p>
-        <p>Ses œuvres sont une quête de la lumière qui sculpte les paysages minéraux de l'Ardèche, traduisant l'émotion brute par le couteau et la matière.</p>
+    <h1 className="text-5xl font-serif text-center mb-4">BÉAME</h1>
+    <p className="text-center text-amber-800 uppercase tracking-[0.3em] text-xs mb-16">L'Exaltation de la Lumière et du Mouvement</p>
+
+    <div className="grid md:grid-cols-5 gap-12 items-start mb-16">
+      <div className="md:col-span-3 space-y-4 text-base text-left">
+        <p className="font-serif italic text-xl text-amber-800 leading-relaxed">
+          « De l'exaltation de la lumière naît la couleur des émotions et de la pensée. »
+        </p>
+        <p className="text-gray-700 leading-relaxed">
+          Pour BÉAME, l'art n'est pas une simple discipline, c'est une célébration de la vie sous toutes ses formes. Son parcours est une danse entre la rigueur du trait, la fluidité du mouvement et l'ardeur de la couleur.
+        </p>
       </div>
       <div className="md:col-span-2">
         <img src="/images/bea.webp" alt="BÉAME, artiste peintre à Saint Remèze en Ardèche" className="w-full shadow-2xl grayscale" loading="lazy" />
+      </div>
+    </div>
+
+    <div className="max-w-3xl mx-auto space-y-10 text-gray-700 leading-relaxed">
+      <div>
+        <h2 className="text-xl font-serif text-gray-900 mb-3">Un parcours au confluent des Arts</h2>
+        <p>Amoureuse des Arts depuis toujours, BÉAME commence son exploration créative par le corps. La danse classique, moderne et les expressions corporelles lui insufflent le sens du rythme et de la gestuelle, que l'on retrouve aujourd'hui dans le dynamisme de ses coups de pinceau.</p>
+        <p className="mt-3">Sa maîtrise technique s'affine ensuite par une formation de dessinatrice industrielle, apportant à son œuvre une structure et une compréhension profonde de la perspective et de la forme.</p>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-serif text-gray-900 mb-3">Un voyage chromatique : du Vercors à la Normandie</h2>
+        <p>Ses premiers pas chromatiques se font à l'aquarelle, sous l'influence des lumières froides, bleutées et violacées des paysages du Vercors. Ce contact avec la transparence et la délicatesse de l'eau forge sa sensibilité aux nuances les plus subtiles.</p>
+        <p className="mt-3">Le chemin de la vie la conduit ensuite en Normandie, une étape charnière de son évolution artistique. Elle y a l'honneur et le bonheur de suivre l'enseignement de l'artiste-peintre et professeur des Beaux-Arts Christian Sauvé, à l'École des Beaux-Arts de Rouen. Sous sa direction, elle explore de nouveaux médiums et approfondit ses techniques, apprenant à dompter la matière pour mieux libérer son expression.</p>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-serif text-gray-900 mb-3">L'héritage des racines et l'appel du Sud</h2>
+        <p>Les voyages artistiques de BÉAME sont le reflet de ses racines plurielles. Son œuvre est imprégnée des lumières océaniques et de l'impétuosité de ses jeunes années passées en Martinique et sur les rives de la Méditerranée. Cette influence solaire se traduit par une palette vive, chaleureuse et parfumée, où la couleur devient un vecteur d'énergie pure.</p>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-serif text-gray-900 mb-3">Aujourd'hui : l'ancrage Ardéchois</h2>
+        <p>Désormais installée dans un petit village d'Ardèche, dans le sud de la France, BÉAME poursuit sa quête artistique. Dans cet environnement sauvage et lumineux, elle chemine vers une peinture où l'exaltation de la lumière donne naissance aux couleurs des émotions et de la pensée.</p>
+        <p className="mt-3 font-serif italic text-amber-800">Chaque toile est une invitation à partager sa vision du monde : un univers où tout est beau dès lors qu'il est touché par la grâce de l'Art.</p>
       </div>
     </div>
   </div>
