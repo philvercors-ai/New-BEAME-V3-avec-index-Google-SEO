@@ -4,7 +4,7 @@ import type { Artwork } from './supabaseClient';
 import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.0.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.1.0";
 
 const toSlug = (title: string) =>
   title

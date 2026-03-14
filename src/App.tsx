@@ -17,9 +17,10 @@ import AdminPage from "./AdminPage";
 const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
 
 // --- VERSION
+// v1.1.0 (2026-03-14) — Bio : nouveau texte complet, parcours artistique structuré
 // v1.0.0 (2026-03-14) — Mise en production : galerie Supabase, SEO, admin CRUD, sitemap dynamique
 // v0.1.0 (2026-03-10) — Version initiale : pages statiques, formulaire Web3Forms, React Router
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.0.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.1.0";
 
 // --- COMPOSANT SEO ---
 const SITE_URL = "https://beame.art";
