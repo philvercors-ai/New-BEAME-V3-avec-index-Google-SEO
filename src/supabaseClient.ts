@@ -5,6 +5,11 @@ export const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY || ''
 );
 
+export type Setting = {
+  key: string;
+  value: string;
+};
+
 export type Artwork = {
   id: number;
   slug: string;

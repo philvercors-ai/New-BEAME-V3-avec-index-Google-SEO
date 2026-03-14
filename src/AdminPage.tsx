@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import type { Artwork } from './supabaseClient';
-import { LogOut, Plus, Edit2, Trash2, Upload, X } from 'lucide-react';
+import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
 const APP_VERSION = process.env.REACT_APP_VERSION || "1.0.0";
@@ -238,9 +238,60 @@ const ArtworkForm = ({
   );
 };
 
+// ─── Paramètres ───────────────────────────────────────────────────────────────
+
+const SettingsPanel = () => {
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'instagram_url').single().then(({ data }) => {
+      if (data?.value) setInstagramUrl(data.value);
+    });
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    await supabase.from('settings').upsert({ key: 'instagram_url', value: instagramUrl });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="max-w-lg">
+      <h2 className="text-2xl font-serif mb-8">Paramètres</h2>
+      <form onSubmit={handleSave} className="space-y-6">
+        <div className="space-y-1">
+          <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+            URL Instagram
+          </label>
+          <input
+            type="url"
+            value={instagramUrl}
+            onChange={e => setInstagramUrl(e.target.value)}
+            placeholder="https://instagram.com/votre_compte"
+            className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          className="bg-gray-900 text-white px-8 py-3 uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition"
+        >
+          {saving ? 'Enregistrement...' : saved ? 'Enregistré ✓' : 'Enregistrer'}
+        </button>
+      </form>
+    </div>
+  );
+};
+
 // ─── Gestionnaire d'œuvres ────────────────────────────────────────────────────
 
 const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
+  const [tab, setTab] = useState<'artworks' | 'settings'>('artworks');
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<Artwork | 'new' | null>(null);
@@ -278,10 +329,21 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <span className="text-xl font-serif text-gray-900">BÉAME</span>
             <span className="text-gray-300">|</span>
-            <span className="text-gray-400 text-[10px] uppercase tracking-widest">Administration</span>
+            <button
+              onClick={() => setTab('artworks')}
+              className={`text-[10px] uppercase tracking-widest transition ${tab === 'artworks' ? 'text-amber-700 font-bold border-b border-amber-700' : 'text-gray-400 hover:text-gray-900'}`}
+            >
+              Œuvres
+            </button>
+            <button
+              onClick={() => setTab('settings')}
+              className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition ${tab === 'settings' ? 'text-amber-700 font-bold border-b border-amber-700' : 'text-gray-400 hover:text-gray-900'}`}
+            >
+              <Settings size={13} /> Paramètres
+            </button>
           </div>
           <div className="flex items-center gap-6">
             <a
@@ -302,7 +364,8 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
 
       {/* Contenu */}
       <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex justify-between items-center mb-10">
+        {tab === 'settings' && <SettingsPanel />}
+        {tab === 'artworks' && <><div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-3xl font-serif">Œuvres</h1>
             <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">
@@ -360,6 +423,7 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
             ))}
           </div>
         )}
+        </>}
       </main>
 
       <footer className="text-center py-6">

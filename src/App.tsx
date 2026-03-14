@@ -12,6 +12,8 @@ import {
 import { Menu, X, ArrowLeft, Instagram } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import type { Artwork } from "./supabaseClient";
+
+const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
 import AdminPage from "./AdminPage";
 
 // --- VERSION
@@ -76,7 +78,7 @@ const ScrollToTop = () => {
 };
 
 // --- NAVIGATION ---
-const Navigation = ({ isMenuOpen, setIsMenuOpen }: any) => (
+const Navigation = ({ isMenuOpen, setIsMenuOpen, instagramUrl }: { isMenuOpen: boolean; setIsMenuOpen: (v: boolean) => void; instagramUrl: string }) => (
   <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
       <Link to="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
@@ -89,7 +91,7 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen }: any) => (
         <NavLink to="/contact" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Contact</NavLink>
       </div>
       <div className="flex items-center space-x-4">
-        <a href="https://instagram.com/beame.arts" target="_blank" rel="noreferrer" aria-label="BÉAME sur Instagram" className="text-gray-600 hover:text-amber-600 transition"><Instagram size={20} /></a>
+        <a href={instagramUrl} target="_blank" rel="noreferrer" aria-label="BÉAME sur Instagram" className="text-gray-600 hover:text-amber-600 transition"><Instagram size={20} /></a>
         <button className="md:hidden" aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"} onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -399,6 +401,14 @@ const ContactPage = () => {
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [instagramUrl, setInstagramUrl] = useState(INSTAGRAM_DEFAULT);
+
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'instagram_url').single().then(({ data }) => {
+      if (data?.value) setInstagramUrl(data.value);
+    });
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
@@ -406,7 +416,7 @@ export default function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={
           <div className="flex flex-col min-h-screen bg-white">
-            <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+            <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} instagramUrl={instagramUrl} />
             <main className="flex-grow">
               <Routes>
                 <Route path="/" element={<AccueilPage />} />
