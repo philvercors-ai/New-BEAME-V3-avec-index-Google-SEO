@@ -11,7 +11,15 @@ import {
   useLocation,
   NavLink
 } from "react-router-dom";
-import { Menu, X, ArrowLeft, Instagram } from "lucide-react";
+import { Menu, X, ArrowLeft } from "lucide-react";
+
+const InstagramIcon = ({ size = 20 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+  </svg>
+);
 import { supabase } from "./supabaseClient";
 import type { Artwork } from "./supabaseClient";
 import AdminPage from "./AdminPage";
@@ -94,7 +102,7 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen, instagramUrl }: { isMenuOpen: b
         <NavLink to="/contact" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Contact</NavLink>
       </div>
       <div className="flex items-center space-x-4">
-        <a href={instagramUrl} target="_blank" rel="noreferrer" aria-label="BÉAME sur Instagram" className="text-gray-600 hover:text-amber-600 transition"><Instagram size={20} /></a>
+        <a href={instagramUrl} target="_blank" rel="noreferrer" aria-label="BÉAME sur Instagram" className="text-gray-600 hover:text-amber-600 transition"><InstagramIcon size={20} /></a>
         <button className="md:hidden" aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"} onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -116,7 +124,7 @@ const AccueilPage = () => (
   <div className="relative h-screen flex items-center justify-center overflow-hidden">
     <SEO
       title="BÉAME | Artiste Peintre à Saint Remèze - Ardèche"
-      description="Découvrez les œuvres de BÉAME, artiste peintre professionnelle à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines."
+      description="Découvrez les œuvres de BÉAME, artiste peintre à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines."
       image="/images/Chaos-originel.webp"
       path="/"
       jsonLd={{
@@ -243,7 +251,7 @@ const GaleriePage = () => {
       />
       <h1 className="text-5xl font-serif text-center mb-12">Galerie d'Art</h1>
       <div className="flex justify-center gap-4 mb-16 text-[10px] uppercase tracking-[0.2em] flex-wrap">
-        {["tous", "paysage", "abstrait", "mer & océan"].map(filter => (
+        {["tous", "paysage", "abstrait", "mer & océan", "figuratif"].map(filter => (
           <button key={filter} onClick={() => setSelectedFilter(filter)} className={`pb-2 transition-all ${selectedFilter === filter ? "text-amber-700 border-b-2 border-amber-700 font-bold" : "text-gray-400 hover:text-gray-900"}`}>{filter}</button>
         ))}
       </div>
