@@ -12,6 +12,9 @@ import {
   NavLink
 } from "react-router-dom";
 import { Menu, X, ArrowLeft } from "lucide-react";
+import { supabase } from "./supabaseClient";
+import type { Artwork } from "./supabaseClient";
+import AdminPage from "./AdminPage";
 
 const InstagramIcon = ({ size = 20 }: { size?: number }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -20,9 +23,6 @@ const InstagramIcon = ({ size = 20 }: { size?: number }) => (
     <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
   </svg>
 );
-import { supabase } from "./supabaseClient";
-import type { Artwork } from "./supabaseClient";
-import AdminPage from "./AdminPage";
 
 const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
 
