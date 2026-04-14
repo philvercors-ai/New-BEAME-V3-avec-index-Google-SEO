@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import type { Artwork } from './supabaseClient';
-import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings } from 'lucide-react';
+import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings, BarChart2 } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.1.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.2.0";
 
 const toSlug = (title: string) =>
   title
@@ -15,7 +15,7 @@ const toSlug = (title: string) =>
     .replace(/^-+|-+$/g, '');
 
 const EMPTY_FORM = {
-  title: '', slug: '', category: 'abstrait', image: '',
+  title: '', slug: '', category: ['abstrait'] as string[], image: '',
   technique: '', support: '', description: '', cartel: '',
   price: '', dimensions: '', sort_order: 0,
 };
@@ -149,7 +149,7 @@ const ArtworkForm = ({
   const [form, setForm] = useState<FormData>({ ...EMPTY_FORM, ...initial } as FormData);
   const [saving, setSaving] = useState(false);
 
-  const set = (field: keyof FormData, val: string | number) =>
+  const set = (field: keyof FormData, val: string | number | string[]) =>
     setForm(f => ({ ...f, [field]: val }));
 
   const handleTitleChange = (val: string) =>
@@ -161,6 +161,7 @@ const ArtworkForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.image) { alert('Veuillez ajouter une image.'); return; }
+    if (form.category.length === 0) { alert('Veuillez sélectionner au moins une catégorie.'); return; }
     setSaving(true);
     await onSave(form);
     setSaving(false);
@@ -194,14 +195,29 @@ const ArtworkForm = ({
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Catégorie</label>
-            <select
-              value={form.category} onChange={e => set('category', e.target.value)}
-              className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent"
-            >
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+          <div className="space-y-2">
+            <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Catégories *</label>
+            <div className="flex flex-wrap gap-4 pt-1">
+              {CATEGORIES.map(c => (
+                <label key={c} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.category.includes(c)}
+                    onChange={e => {
+                      const next = e.target.checked
+                        ? [...form.category, c]
+                        : form.category.filter(cat => cat !== c);
+                      set('category', next);
+                    }}
+                    className="accent-amber-700 w-4 h-4"
+                  />
+                  <span className="text-sm text-gray-700 capitalize">{c}</span>
+                </label>
+              ))}
+            </div>
+            {form.category.length === 0 && (
+              <p className="text-red-400 text-[10px] uppercase tracking-widest">Sélectionner au moins une catégorie</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-6">
@@ -288,10 +304,144 @@ const SettingsPanel = () => {
   );
 };
 
+// ─── Statistiques ─────────────────────────────────────────────────────────────
+
+const PAGE_LABELS: Record<string, string> = {
+  '/': 'Accueil',
+  '/galerie': 'Galerie',
+  '/bio': "L'Artiste",
+  '/contact': 'Contact',
+};
+
+const pageName = (path: string) => {
+  if (PAGE_LABELS[path]) return PAGE_LABELS[path];
+  if (path.startsWith('/galerie/')) return `Œuvre : ${path.replace('/galerie/', '')}`;
+  return path;
+};
+
+type PageView = { page: string; viewed_at: string };
+
+const AnalyticsPanel = () => {
+  const [views, setViews] = useState<PageView[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    Promise.all([
+      supabase.from('page_views').select('page, viewed_at')
+        .gte('viewed_at', thirtyDaysAgo)
+        .order('viewed_at', { ascending: false }),
+      supabase.from('page_views').select('*', { count: 'exact', head: true }),
+    ]).then(([{ data }, { count }]) => {
+      setViews(data || []);
+      setTotal(count ?? 0);
+      setLoading(false);
+    });
+  }, []);
+
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const countFrom = (from: Date) => views.filter(v => new Date(v.viewed_at) >= from).length;
+
+  const stats = [
+    { label: 'Total', value: total },
+    { label: 'Ce mois', value: views.length },
+    { label: 'Cette semaine', value: countFrom(sevenDaysAgo) },
+    { label: "Aujourd'hui", value: countFrom(startOfToday) },
+  ];
+
+  const pageCounts = views.reduce((acc, v) => {
+    acc[v.page] = (acc[v.page] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const topPages = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+  const last7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const label = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+    const cnt = views.filter(v => {
+      const vd = new Date(v.viewed_at);
+      return vd.getFullYear() === d.getFullYear() && vd.getMonth() === d.getMonth() && vd.getDate() === d.getDate();
+    }).length;
+    return { label, cnt };
+  });
+  const maxCnt = Math.max(...last7.map(d => d.cnt), 1);
+
+  if (loading) return <p className="text-gray-400 text-[10px] uppercase tracking-widest">Chargement...</p>;
+
+  return (
+    <div className="max-w-3xl space-y-8">
+      <h2 className="text-2xl font-serif">Statistiques de fréquentation</h2>
+
+      {/* Cartes */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map(({ label, value }) => (
+          <div key={label} className="bg-white p-6 shadow-sm text-center">
+            <p className="text-3xl font-light text-gray-900">{value}</p>
+            <p className="text-[9px] uppercase tracking-widest text-gray-400 mt-1">{label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Graphe 7 derniers jours */}
+      <div className="bg-white p-6 shadow-sm">
+        <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-6">7 derniers jours</h3>
+        <div className="flex items-end gap-2 h-36">
+          {last7.map(({ label, cnt }) => (
+            <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
+              <span className="text-[9px] text-gray-500 font-medium">{cnt > 0 ? cnt : ''}</span>
+              <div
+                className="w-full bg-amber-700 rounded-sm"
+                style={{ height: `${Math.max((cnt / maxCnt) * 96, cnt > 0 ? 4 : 0)}px` }}
+              />
+              <span className="text-[9px] text-gray-400 text-center leading-tight">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Top pages */}
+      <div className="bg-white p-6 shadow-sm">
+        <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-6">
+          Pages les plus visitées <span className="font-normal text-gray-400">(30 derniers jours)</span>
+        </h3>
+        {topPages.length === 0 ? (
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest">Aucune visite enregistrée</p>
+        ) : (
+          <div className="space-y-3">
+            {topPages.map(([page, cnt]) => (
+              <div key={page} className="flex items-center gap-4">
+                <span className="text-sm text-gray-700 flex-1 truncate">{pageName(page)}</span>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="w-32 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-amber-700 h-1.5 rounded-full"
+                      style={{ width: `${(cnt / topPages[0][1]) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-gray-500 w-8 text-right font-medium">{cnt}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="text-[9px] text-gray-300 uppercase tracking-widest">
+        Données collectées depuis le site · Aucune donnée personnelle stockée
+      </p>
+    </div>
+  );
+};
+
 // ─── Gestionnaire d'œuvres ────────────────────────────────────────────────────
 
 const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
-  const [tab, setTab] = useState<'artworks' | 'settings'>('artworks');
+  const [tab, setTab] = useState<'artworks' | 'settings' | 'analytics'>('artworks');
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<Artwork | 'new' | null>(null);
@@ -344,6 +494,12 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
             >
               <Settings size={13} /> Paramètres
             </button>
+            <button
+              onClick={() => setTab('analytics')}
+              className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition ${tab === 'analytics' ? 'text-amber-700 font-bold border-b border-amber-700' : 'text-gray-400 hover:text-gray-900'}`}
+            >
+              <BarChart2 size={13} /> Statistiques
+            </button>
           </div>
           <div className="flex items-center gap-6">
             <a
@@ -365,6 +521,7 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
       {/* Contenu */}
       <main className="max-w-6xl mx-auto px-6 py-12">
         {tab === 'settings' && <SettingsPanel />}
+        {tab === 'analytics' && <AnalyticsPanel />}
         {tab === 'artworks' && <><div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-3xl font-serif">Œuvres</h1>

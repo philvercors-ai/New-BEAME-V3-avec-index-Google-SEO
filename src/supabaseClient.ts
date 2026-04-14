@@ -14,7 +14,7 @@ export type Artwork = {
   id: number;
   slug: string;
   title: string;
-  category: string;
+  category: string[];
   image: string;
   technique: string;
   support: string;
@@ -23,4 +23,9 @@ export type Artwork = {
   price: string;
   dimensions: string;
   sort_order: number;
+};
+
+export type PageView = {
+  page: string;
+  viewed_at: string;
 };

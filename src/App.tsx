@@ -27,10 +27,11 @@ const InstagramIcon = ({ size = 20 }: { size?: number }) => (
 const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
 
 // --- VERSION
+// v1.2.0 (2026-04-14) — Multi-catégories par œuvre, tableau de bord statistiques admin
 // v1.1.0 (2026-03-14) — Bio : nouveau texte complet, parcours artistique structuré
 // v1.0.0 (2026-03-14) — Mise en production : galerie Supabase, SEO, admin CRUD, sitemap dynamique
 // v0.1.0 (2026-03-10) — Version initiale : pages statiques, formulaire Web3Forms, React Router
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.1.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.2.0";
 
 // --- COMPOSANT SEO ---
 const SITE_URL = "https://beame.art";
@@ -84,7 +85,12 @@ const SEO = ({ title, description, image, path, jsonLd }: SEOProps) => {
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!pathname.startsWith('/admin')) {
+      supabase.from('page_views').insert({ page: pathname });
+    }
+  }, [pathname]);
   return null;
 };
 
@@ -227,7 +233,7 @@ const GaleriePage = () => {
     });
   }, []);
 
-  const filteredArt = artworks.filter(art => selectedFilter === "tous" || art.category === selectedFilter);
+  const filteredArt = artworks.filter(art => selectedFilter === "tous" || art.category.includes(selectedFilter));
 
   return (
     <div className="pt-32 pb-20 max-w-7xl mx-auto px-4">
@@ -352,7 +358,7 @@ const InfoImage = () => {
       </div>
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
         <div className="max-w-md w-full space-y-8 text-left">
-          <div><span className="text-amber-600 text-[10px] font-bold uppercase tracking-widest">{artwork.category}</span>
+          <div><span className="text-amber-600 text-[10px] font-bold uppercase tracking-widest">{artwork.category.join(' · ')}</span>
           <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mt-2 italic">{artwork.title}</h1></div>
           <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line border-t pt-6">{artwork.description}</p>
           {artwork.cartel && (
