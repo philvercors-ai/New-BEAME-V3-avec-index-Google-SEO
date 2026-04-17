@@ -88,7 +88,9 @@ const ScrollToTop = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (!pathname.startsWith('/admin')) {
-      supabase.from('page_views').insert({ page: pathname });
+      supabase.from('page_views').insert({ page: pathname }).then(({ error }) => {
+        if (error) console.error('[page_views]', error);
+      });
     }
   }, [pathname]);
   return null;
