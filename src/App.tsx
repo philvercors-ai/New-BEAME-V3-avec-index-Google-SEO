@@ -11,10 +11,26 @@ import {
   useLocation,
   NavLink
 } from "react-router-dom";
-import { Menu, X, ArrowLeft } from "lucide-react";
+import { Menu, X, ArrowLeft, Link2 } from "lucide-react";
 import { supabase } from "./supabaseClient";
-import type { Artwork } from "./supabaseClient";
+import type { Artwork, Exposition } from "./supabaseClient";
 import AdminPage from "./AdminPage";
+
+const PinterestIcon = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+  </svg>
+);
+const FacebookIcon = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+const WhatsAppIcon = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+  </svg>
+);
 
 const InstagramIcon = ({ size = 20 }: { size?: number }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -105,6 +121,7 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen, instagramUrl }: { isMenuOpen: b
         <NavLink to="/" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Accueil</NavLink>
         <NavLink to="/bio" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>L'Artiste</NavLink>
         <NavLink to="/galerie" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Galerie</NavLink>
+        <NavLink to="/expositions" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Expositions</NavLink>
         <NavLink to="/contact" className={({ isActive }) => `${isActive ? "text-amber-700 border-b-2 border-amber-700" : "text-gray-500"} hover:text-amber-600 transition uppercase text-[10px] tracking-widest px-1`}>Contact</NavLink>
       </div>
       <div className="flex items-center space-x-4">
@@ -119,6 +136,7 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen, instagramUrl }: { isMenuOpen: b
         <Link to="/" onClick={() => setIsMenuOpen(false)} className="uppercase text-[10px] tracking-widest font-bold">Accueil</Link>
         <Link to="/bio" onClick={() => setIsMenuOpen(false)} className="uppercase text-[10px] tracking-widest font-bold">L'Artiste</Link>
         <Link to="/galerie" onClick={() => setIsMenuOpen(false)} className="uppercase text-[10px] tracking-widest font-bold">Galerie</Link>
+        <Link to="/expositions" onClick={() => setIsMenuOpen(false)} className="uppercase text-[10px] tracking-widest font-bold">Expositions</Link>
         <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="uppercase text-[10px] tracking-widest font-bold">Contact</Link>
       </div>
     )}
@@ -220,6 +238,88 @@ const BioPage = () => (
   </div>
 );
 
+// --- PAGE EXPOSITIONS ---
+const ExpositionsPage = () => {
+  const [expositions, setExpositions] = useState<Exposition[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from('expositions').select('*').order('date_start', { ascending: false }).then(({ data }) => {
+      setExpositions(data || []);
+      setLoading(false);
+    });
+  }, []);
+
+  const now = new Date();
+  const upcoming = expositions.filter(e => new Date(e.date_end || e.date_start) >= now);
+  const past = expositions.filter(e => new Date(e.date_end || e.date_start) < now);
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const ExpoCard = ({ expo }: { expo: Exposition }) => (
+    <div className="border-t border-gray-100 py-8">
+      <div className="flex flex-col md:flex-row md:items-start gap-4">
+        <div className="md:w-48 shrink-0 text-amber-700 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+          {formatDate(expo.date_start)}
+          {expo.date_end && <><br /><span className="font-normal">au {formatDate(expo.date_end)}</span></>}
+        </div>
+        <div className="flex-1">
+          <h3 className="font-serif text-xl text-gray-900">{expo.title}</h3>
+          {expo.venue && <p className="text-gray-600 text-sm mt-1">{expo.venue}</p>}
+          {expo.location && <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">{expo.location}</p>}
+          {expo.description && <p className="text-gray-600 text-sm mt-3 leading-relaxed">{expo.description}</p>}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="pt-32 pb-20 max-w-4xl mx-auto px-4">
+      <SEO
+        title="Expositions | BÉAME - Artiste Peintre Ardèche"
+        description="Retrouvez les expositions passées et à venir de BÉAME, artiste peintre à Saint Remèze en Ardèche."
+        path="/expositions"
+      />
+      <h1 className="text-5xl font-serif text-center mb-4">Expositions</h1>
+      <p className="text-center text-amber-800 uppercase tracking-[0.3em] text-xs mb-16">Rencontres & Événements</p>
+
+      {loading ? (
+        <div className="space-y-0">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="animate-pulse border-t border-gray-100 py-8 flex gap-6">
+              <div className="w-48 h-4 bg-gray-100 rounded shrink-0" />
+              <div className="flex-1 space-y-3">
+                <div className="h-5 bg-gray-100 rounded w-2/3" />
+                <div className="h-3 bg-gray-100 rounded w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : expositions.length === 0 ? (
+        <div className="text-center py-24 border-t border-gray-100">
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest">Aucune exposition pour le moment</p>
+        </div>
+      ) : (
+        <div>
+          {upcoming.length > 0 && (
+            <section className="mb-16">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-amber-700 font-bold mb-2">À venir</p>
+              {upcoming.map(e => <ExpoCard key={e.id} expo={e} />)}
+            </section>
+          )}
+          {past.length > 0 && (
+            <section>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-2">Expositions passées</p>
+              {past.map(e => <ExpoCard key={e.id} expo={e} />)}
+            </section>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // --- PAGE GALERIE ---
 const GaleriePage = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -299,6 +399,7 @@ const GaleriePage = () => {
 const InfoImage = () => {
   const { slug } = useParams();
   const [artwork, setArtwork] = useState<Artwork | null | undefined>(undefined);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     supabase.from('artworks').select('*').eq('slug', slug).single().then(({ data }) => {
@@ -377,6 +478,30 @@ const InfoImage = () => {
           >
             Demander une acquisition
           </Link>
+          <div className="flex items-center gap-5 pt-2">
+            <span className="text-[9px] uppercase tracking-widest text-gray-400">Partager</span>
+            <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}&media=${encodeURIComponent(artwork.image)}&description=${encodeURIComponent(`${artwork.title} — ${artwork.technique} — BÉAME artiste peintre`)}`}
+              target="_blank" rel="noreferrer" aria-label="Partager sur Pinterest"
+              className="text-gray-400 hover:text-red-600 transition">
+              <PinterestIcon size={17} />
+            </a>
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}`}
+              target="_blank" rel="noreferrer" aria-label="Partager sur Facebook"
+              className="text-gray-400 hover:text-blue-600 transition">
+              <FacebookIcon size={17} />
+            </a>
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${artwork.title} par BÉAME — ${SITE_URL}/galerie/${artwork.slug}`)}`}
+              target="_blank" rel="noreferrer" aria-label="Partager sur WhatsApp"
+              className="text-gray-400 hover:text-green-500 transition">
+              <WhatsAppIcon size={17} />
+            </a>
+            <button
+              onClick={() => { navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+              aria-label="Copier le lien" className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition">
+              <Link2 size={17} />
+              {copied && <span className="text-[9px] text-amber-700 uppercase tracking-widest">Copié !</span>}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -472,6 +597,7 @@ export default function App() {
                 <Route path="/galerie" element={<GaleriePage />} />
                 <Route path="/galerie/:slug" element={<InfoImage />} />
                 <Route path="/bio" element={<BioPage />} />
+                <Route path="/expositions" element={<ExpositionsPage />} />
                 <Route path="/contact" element={<ContactPage />} />
               </Routes>
             </main>

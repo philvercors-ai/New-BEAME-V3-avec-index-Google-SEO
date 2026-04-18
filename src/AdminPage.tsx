@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import type { Artwork } from './supabaseClient';
-import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings, BarChart2 } from 'lucide-react';
+import type { Artwork, Exposition } from './supabaseClient';
+import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings, BarChart2, Calendar } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
 const APP_VERSION = process.env.REACT_APP_VERSION || "1.2.0";
@@ -438,10 +438,187 @@ const AnalyticsPanel = () => {
   );
 };
 
+// ─── Expositions admin ────────────────────────────────────────────────────────
+
+type ExpoFormData = Omit<Exposition, 'id'>;
+const EMPTY_EXPO: ExpoFormData = { title: '', venue: '', location: '', date_start: '', date_end: null, description: '' };
+
+const ExpoForm = ({ initial, onSave, onCancel }: { initial?: Partial<Exposition>; onSave: (d: ExpoFormData) => Promise<void>; onCancel: () => void }) => {
+  const [form, setForm] = useState<ExpoFormData>({ ...EMPTY_EXPO, ...initial });
+  const [saving, setSaving] = useState(false);
+  const set = (f: keyof ExpoFormData, v: string | null) => setForm(prev => ({ ...prev, [f]: v }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    await onSave({ ...form, date_end: form.date_end || null });
+    setSaving(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 overflow-y-auto flex items-start justify-center p-4 pt-10">
+      <div className="bg-white w-full max-w-lg p-8 shadow-2xl mb-10">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-serif">{initial?.id ? "Modifier l'exposition" : 'Nouvelle exposition'}</h2>
+          <button onClick={onCancel} className="text-gray-400 hover:text-gray-900"><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1">
+            <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Titre *</label>
+            <input required value={form.title} onChange={e => set('title', e.target.value)}
+              className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent" />
+          </div>
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-1">
+              <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Lieu / Galerie</label>
+              <input value={form.venue} onChange={e => set('venue', e.target.value)} placeholder="ex : Galerie du Pont"
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent" />
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Ville</label>
+              <input value={form.location} onChange={e => set('location', e.target.value)} placeholder="ex : Vallon-Pont-d'Arc"
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-1">
+              <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Date de début *</label>
+              <input required type="date" value={form.date_start} onChange={e => set('date_start', e.target.value)}
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent" />
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Date de fin</label>
+              <input type="date" value={form.date_end || ''} onChange={e => set('date_end', e.target.value || null)}
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 text-sm bg-transparent" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Description</label>
+            <textarea rows={3} value={form.description} onChange={e => set('description', e.target.value)}
+              className="w-full border-b border-gray-300 py-2 outline-none focus:border-amber-700 resize-none text-sm bg-transparent" />
+          </div>
+          <div className="flex gap-4 pt-4 border-t">
+            <button type="submit" disabled={saving}
+              className="flex-1 bg-gray-900 text-white py-4 uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
+              {saving ? 'Enregistrement...' : 'Enregistrer'}
+            </button>
+            <button type="button" onClick={onCancel}
+              className="px-8 border border-gray-300 text-gray-700 uppercase tracking-widest text-[10px] font-bold hover:bg-gray-50 transition">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const ExpositionsAdminPanel = () => {
+  const [expositions, setExpositions] = useState<Exposition[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editTarget, setEditTarget] = useState<Exposition | 'new' | null>(null);
+  const [deleting, setDeleting] = useState<number | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from('expositions').select('*').order('date_start', { ascending: false });
+    setExpositions(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleSave = async (form: ExpoFormData) => {
+    if (editTarget && editTarget !== 'new') {
+      await supabase.from('expositions').update(form).eq('id', (editTarget as Exposition).id);
+    } else {
+      await supabase.from('expositions').insert([form]);
+    }
+    setEditTarget(null);
+    load();
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Supprimer cette exposition ?')) return;
+    setDeleting(id);
+    await supabase.from('expositions').delete().eq('id', id);
+    setDeleting(null);
+    load();
+  };
+
+  const fmt = (d: string) => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const isUpcoming = (e: Exposition) => new Date(e.date_end || e.date_start) >= new Date();
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 className="text-3xl font-serif">Expositions</h1>
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">
+            {expositions.length} exposition{expositions.length > 1 ? 's' : ''}
+          </p>
+        </div>
+        <button onClick={() => setEditTarget('new')}
+          className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
+          <Plus size={16} /> Nouvelle exposition
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-32 text-gray-300 text-[10px] uppercase tracking-widest">Chargement...</div>
+      ) : expositions.length === 0 ? (
+        <div className="text-center py-32 border-2 border-dashed border-gray-200">
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-4">Aucune exposition</p>
+          <button onClick={() => setEditTarget('new')} className="text-amber-700 text-[10px] uppercase tracking-widest font-bold hover:underline">
+            Ajouter la première exposition
+          </button>
+        </div>
+      ) : (
+        <div>
+          {expositions.map(expo => (
+            <div key={expo.id} className="border-t border-gray-100 py-5 flex items-start gap-6 group">
+              <div className="w-48 shrink-0">
+                <span className={`text-[9px] font-bold uppercase tracking-widest ${isUpcoming(expo) ? 'text-amber-700' : 'text-gray-400'}`}>
+                  {isUpcoming(expo) ? '● À venir' : '○ Passée'}
+                </span>
+                <p className="text-[10px] text-gray-500 mt-1 leading-relaxed">
+                  {fmt(expo.date_start)}{expo.date_end && ` — ${fmt(expo.date_end)}`}
+                </p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-serif italic text-lg text-gray-900">{expo.title}</p>
+                {expo.venue && <p className="text-gray-500 text-xs mt-0.5">{expo.venue}{expo.location && ` · ${expo.location}`}</p>}
+              </div>
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition shrink-0">
+                <button onClick={() => setEditTarget(expo)} title="Modifier"
+                  className="bg-white text-gray-900 p-2 border border-gray-200 hover:bg-gray-50 transition">
+                  <Edit2 size={14} />
+                </button>
+                <button onClick={() => handleDelete(expo.id)} disabled={deleting === expo.id} title="Supprimer"
+                  className="bg-white text-red-500 p-2 border border-gray-200 hover:bg-red-50 transition">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {editTarget && (
+        <ExpoForm
+          initial={editTarget === 'new' ? undefined : editTarget as Exposition}
+          onSave={handleSave}
+          onCancel={() => setEditTarget(null)}
+        />
+      )}
+    </div>
+  );
+};
+
 // ─── Gestionnaire d'œuvres ────────────────────────────────────────────────────
 
 const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
-  const [tab, setTab] = useState<'artworks' | 'settings' | 'analytics'>('artworks');
+  const [tab, setTab] = useState<'artworks' | 'settings' | 'analytics' | 'expositions'>('artworks');
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<Artwork | 'new' | null>(null);
@@ -495,6 +672,12 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
               <Settings size={13} /> Paramètres
             </button>
             <button
+              onClick={() => setTab('expositions')}
+              className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition ${tab === 'expositions' ? 'text-amber-700 font-bold border-b border-amber-700' : 'text-gray-400 hover:text-gray-900'}`}
+            >
+              <Calendar size={13} /> Expositions
+            </button>
+            <button
               onClick={() => setTab('analytics')}
               className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition ${tab === 'analytics' ? 'text-amber-700 font-bold border-b border-amber-700' : 'text-gray-400 hover:text-gray-900'}`}
             >
@@ -521,6 +704,7 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
       {/* Contenu */}
       <main className="max-w-6xl mx-auto px-6 py-12">
         {tab === 'settings' && <SettingsPanel />}
+        {tab === 'expositions' && <ExpositionsAdminPanel />}
         {tab === 'analytics' && <AnalyticsPanel />}
         {tab === 'artworks' && <><div className="flex justify-between items-center mb-10">
           <div>

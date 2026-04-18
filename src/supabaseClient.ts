@@ -29,3 +29,13 @@ export type PageView = {
   page: string;
   viewed_at: string;
 };
+
+export type Exposition = {
+  id: number;
+  title: string;
+  venue: string;
+  location: string;
+  date_start: string;
+  date_end: string | null;
+  description: string;
+};
