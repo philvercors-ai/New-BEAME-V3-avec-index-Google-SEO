@@ -145,46 +145,78 @@ const Navigation = ({ isMenuOpen, setIsMenuOpen, instagramUrl }: { isMenuOpen: b
 );
 
 // --- PAGE ACCUEIL ---
-const AccueilPage = () => (
-  <div className="relative h-screen flex items-center justify-center overflow-hidden">
-    <SEO
-      title="BÉAME | Artiste Peintre à Saint Remèze - Ardèche"
-      description="Découvrez les œuvres de BÉAME, artiste peintre à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines."
-      image="/images/Chaos-originel.webp"
-      path="/"
-      jsonLd={{
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "BÉAME",
-        "jobTitle": "Artiste Peintre",
-        "url": "https://beame.art",
-        "sameAs": ["https://www.instagram.com/beame.arts"],
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Saint Remèze",
-          "addressRegion": "Ardèche",
-          "addressCountry": "FR"
-        }
-      }}
-    />
-    <div className="absolute inset-0 z-0">
-      <img src="images/Chaos-originel.webp" alt="Chaos originel - peinture à l'huile de BÉAME, artiste ardéchoise" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
-      <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]"></div>
-    </div>
-    <div className="relative z-10 text-center px-4">
-      <h1 className="text-7xl md:text-9xl font-serif mb-6 tracking-tighter text-gray-900">BÉAME</h1>
-      <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre • Saint Remèze - Ardèche</h2>
-      <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-        <Link to="/galerie" className="px-10 py-4 bg-gray-900 text-white uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
-          Découvrir la Galerie
-        </Link>
-        <Link to="/bio" className="px-10 py-4 border border-gray-900 text-gray-900 uppercase tracking-widest text-[10px] font-bold hover:bg-gray-900 hover:text-white transition">
-          L'Artiste
-        </Link>
+const AccueilPage = () => {
+  const [nextExpo, setNextExpo] = useState<Exposition | null>(null);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    supabase
+      .from('expositions')
+      .select('*')
+      .gte('date_start', today)
+      .order('date_start', { ascending: true })
+      .limit(1)
+      .then(({ data }) => { if (data && data.length > 0) setNextExpo(data[0]); });
+  }, []);
+
+  return (
+    <div className="relative h-screen flex items-center justify-center overflow-hidden">
+      <SEO
+        title="BÉAME | Artiste Peintre à Saint Remèze - Ardèche"
+        description="Découvrez les œuvres de BÉAME, artiste peintre à Saint Remèze en Ardèche. Peintures à l'huile et acrylique, paysages, abstraits et marines."
+        image="/images/Chaos-originel.webp"
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "BÉAME",
+          "jobTitle": "Artiste Peintre",
+          "url": "https://beame.art",
+          "sameAs": ["https://www.instagram.com/beame.arts"],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Saint Remèze",
+            "addressRegion": "Ardèche",
+            "addressCountry": "FR"
+          }
+        }}
+      />
+      <div className="absolute inset-0 z-0">
+        <img src="images/Chaos-originel.webp" alt="Chaos originel - peinture à l'huile de BÉAME, artiste ardéchoise" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]"></div>
+      </div>
+      <div className="relative z-10 text-center px-4">
+        <h1 className="text-7xl md:text-9xl font-serif mb-6 tracking-tighter text-gray-900">BÉAME</h1>
+        <h2 className="text-amber-900 uppercase tracking-[0.4em] text-sm md:text-base mb-12 font-bold">Artiste Peintre • Saint Remèze - Ardèche</h2>
+        <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+          <Link to="/galerie" className="px-10 py-4 bg-gray-900 text-white uppercase tracking-widest text-[10px] font-bold hover:bg-amber-800 transition">
+            Découvrir la Galerie
+          </Link>
+          <Link to="/bio" className="px-10 py-4 border border-gray-900 text-gray-900 uppercase tracking-widest text-[10px] font-bold hover:bg-gray-900 hover:text-white transition">
+            L'Artiste
+          </Link>
+        </div>
+        {nextExpo && (
+          <div className="mt-10">
+            <Link
+              to="/expositions"
+              className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm border border-amber-800/30 px-6 py-3 hover:bg-amber-800 hover:text-white hover:border-amber-800 transition group"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-700 group-hover:bg-white shrink-0" />
+              <span className="text-[10px] uppercase tracking-widest text-amber-900 group-hover:text-white font-bold">
+                Exposition à venir
+              </span>
+              <span className="text-[10px] text-gray-600 group-hover:text-white/80 italic font-serif normal-case tracking-normal">
+                {nextExpo.title}
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-gray-400 group-hover:text-white/70">→</span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- PAGE BIO ---
 const BioPage = () => (
