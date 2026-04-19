@@ -149,14 +149,15 @@ const AccueilPage = () => {
   const [nextExpo, setNextExpo] = useState<Exposition | null>(null);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
     supabase
       .from('expositions')
       .select('*')
-      .gte('date_start', today)
       .order('date_start', { ascending: true })
-      .limit(1)
-      .then(({ data }) => { if (data && data.length > 0) setNextExpo(data[0]); });
+      .then(({ data }) => {
+        const upcoming = (data || []).find(e => new Date(e.date_end || e.date_start) >= today);
+        if (upcoming) setNextExpo(upcoming);
+      });
   }, []);
 
   return (
