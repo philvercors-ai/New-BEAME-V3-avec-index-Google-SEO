@@ -515,32 +515,41 @@ const InfoImage = () => {
           >
             Demander une acquisition
           </Link>
-          <div className="flex items-center gap-5 pt-2">
-            <span className="text-[9px] uppercase tracking-widest text-gray-400">Partager</span>
-            <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}&media=${encodeURIComponent(artwork.image)}&description=${encodeURIComponent(`${artwork.title} — ${artwork.technique} — BÉAME artiste peintre`)}`}
-              target="_blank" rel="noreferrer" aria-label="Partager sur Pinterest"
-              onClick={() => trackShare('pinterest')}
-              className="text-gray-400 hover:text-red-600 transition">
-              <PinterestIcon size={17} />
-            </a>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}`}
-              target="_blank" rel="noreferrer" aria-label="Partager sur Facebook"
-              onClick={() => trackShare('facebook')}
-              className="text-gray-400 hover:text-blue-600 transition">
-              <FacebookIcon size={17} />
-            </a>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${artwork.title} par BÉAME — ${SITE_URL}/galerie/${artwork.slug}`)}`}
-              target="_blank" rel="noreferrer" aria-label="Partager sur WhatsApp"
-              onClick={() => trackShare('whatsapp')}
-              className="text-gray-400 hover:text-green-500 transition">
-              <WhatsAppIcon size={17} />
-            </a>
-            <button
-              onClick={() => { trackShare('copy'); navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-              aria-label="Copier le lien" className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition">
-              <Link2 size={17} />
-              {copied && <span className="text-[9px] text-amber-700 uppercase tracking-widest">Copié !</span>}
-            </button>
+          <div className="pt-2 border-t border-gray-100">
+            <span className="text-[9px] uppercase tracking-widest text-gray-400 block mb-3">Partager</span>
+            <div className="grid grid-cols-4 gap-2">
+              <a
+                href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}&media=${encodeURIComponent(artwork.image)}&description=${encodeURIComponent(`${artwork.title} — ${artwork.technique} — BÉAME artiste peintre`)}`}
+                target="_blank" rel="noreferrer" aria-label="Partager sur Pinterest"
+                onClick={() => trackShare('pinterest')}
+                className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-500 transition rounded-sm">
+                <PinterestIcon size={20} />
+                <span className="text-[8px] uppercase tracking-widest">Pinterest</span>
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}`}
+                target="_blank" rel="noreferrer" aria-label="Partager sur Facebook"
+                onClick={() => trackShare('facebook')}
+                className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-blue-50 hover:text-blue-600 text-gray-500 transition rounded-sm">
+                <FacebookIcon size={20} />
+                <span className="text-[8px] uppercase tracking-widest">Facebook</span>
+              </a>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`${artwork.title} par BÉAME — ${SITE_URL}/galerie/${artwork.slug}`)}`}
+                target="_blank" rel="noreferrer" aria-label="Partager sur WhatsApp"
+                onClick={() => trackShare('whatsapp')}
+                className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-green-50 hover:text-green-600 text-gray-500 transition rounded-sm">
+                <WhatsAppIcon size={20} />
+                <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>
+              </a>
+              <button
+                onClick={() => { trackShare('copy'); navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                aria-label="Copier le lien"
+                className={`flex flex-col items-center gap-1.5 py-3 rounded-sm transition ${copied ? 'bg-amber-50 text-amber-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-500'}`}>
+                <Link2 size={20} />
+                <span className="text-[8px] uppercase tracking-widest">{copied ? 'Copié !' : 'Lien'}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
