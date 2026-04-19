@@ -48,7 +48,7 @@ const INSTAGRAM_DEFAULT = "https://instagram.com/beame.arts";
 // v1.1.0 (2026-03-14) — Bio : nouveau texte complet, parcours artistique structuré
 // v1.0.0 (2026-03-14) — Mise en production : galerie Supabase, SEO, admin CRUD, sitemap dynamique
 // v0.1.0 (2026-03-10) — Version initiale : pages statiques, formulaire Web3Forms, React Router
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.3.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.4.0";
 
 // --- COMPOSANT SEO ---
 const SITE_URL = "https://beame.art";
@@ -401,6 +401,9 @@ const InfoImage = () => {
   const { slug } = useParams();
   const [artwork, setArtwork] = useState<Artwork | null | undefined>(undefined);
   const [copied, setCopied] = useState(false);
+  const trackShare = (platform: string) => {
+    supabase.from('share_events').insert({ page: `/galerie/${slug}`, platform }).then(() => {});
+  };
 
   useEffect(() => {
     supabase.from('artworks').select('*').eq('slug', slug).single().then(({ data }) => {
@@ -483,21 +486,24 @@ const InfoImage = () => {
             <span className="text-[9px] uppercase tracking-widest text-gray-400">Partager</span>
             <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}&media=${encodeURIComponent(artwork.image)}&description=${encodeURIComponent(`${artwork.title} — ${artwork.technique} — BÉAME artiste peintre`)}`}
               target="_blank" rel="noreferrer" aria-label="Partager sur Pinterest"
+              onClick={() => trackShare('pinterest')}
               className="text-gray-400 hover:text-red-600 transition">
               <PinterestIcon size={17} />
             </a>
             <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}`}
               target="_blank" rel="noreferrer" aria-label="Partager sur Facebook"
+              onClick={() => trackShare('facebook')}
               className="text-gray-400 hover:text-blue-600 transition">
               <FacebookIcon size={17} />
             </a>
             <a href={`https://wa.me/?text=${encodeURIComponent(`${artwork.title} par BÉAME — ${SITE_URL}/galerie/${artwork.slug}`)}`}
               target="_blank" rel="noreferrer" aria-label="Partager sur WhatsApp"
+              onClick={() => trackShare('whatsapp')}
               className="text-gray-400 hover:text-green-500 transition">
               <WhatsAppIcon size={17} />
             </a>
             <button
-              onClick={() => { navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+              onClick={() => { trackShare('copy'); navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
               aria-label="Copier le lien" className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition">
               <Link2 size={17} />
               {copied && <span className="text-[9px] text-amber-700 uppercase tracking-widest">Copié !</span>}

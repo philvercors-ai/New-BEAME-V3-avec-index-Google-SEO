@@ -4,7 +4,7 @@ import type { Artwork, Exposition } from './supabaseClient';
 import { LogOut, Plus, Edit2, Trash2, Upload, X, Settings, BarChart2, Calendar } from 'lucide-react';
 
 const CATEGORIES = ['abstrait', 'mer & océan', 'paysage', 'figuratif'];
-const APP_VERSION = process.env.REACT_APP_VERSION || "1.3.0";
+const APP_VERSION = process.env.REACT_APP_VERSION || "1.4.0";
 
 const toSlug = (title: string) =>
   title
@@ -320,10 +320,19 @@ const pageName = (path: string) => {
 };
 
 type PageView = { page: string; viewed_at: string };
+type ShareEvent = { platform: string };
+
+const PLATFORM_LABELS: Record<string, string> = {
+  pinterest: 'Pinterest',
+  facebook: 'Facebook',
+  whatsapp: 'WhatsApp',
+  copy: 'Lien copié',
+};
 
 const AnalyticsPanel = () => {
   const [views, setViews] = useState<PageView[]>([]);
   const [total, setTotal] = useState<number>(0);
+  const [shares, setShares] = useState<ShareEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -333,9 +342,11 @@ const AnalyticsPanel = () => {
         .gte('viewed_at', thirtyDaysAgo)
         .order('viewed_at', { ascending: false }),
       supabase.from('page_views').select('*', { count: 'exact', head: true }),
-    ]).then(([{ data }, { count }]) => {
+      supabase.from('share_events').select('platform').gte('shared_at', thirtyDaysAgo),
+    ]).then(([{ data }, { count }, { data: shareData }]) => {
       setViews(data || []);
       setTotal(count ?? 0);
+      setShares(shareData || []);
       setLoading(false);
     });
   }, []);
@@ -427,6 +438,37 @@ const AnalyticsPanel = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Partages */}
+      <div className="bg-white p-6 shadow-sm">
+        <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">
+          Partages <span className="font-normal text-gray-400">(30 derniers jours)</span>
+        </h3>
+        <p className="text-3xl font-light text-gray-900 mb-6">{shares.length}</p>
+        {shares.length === 0 ? (
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest">Aucun partage enregistré</p>
+        ) : (
+          <div className="space-y-3">
+            {(['pinterest', 'facebook', 'whatsapp', 'copy'] as const).map(platform => {
+              const cnt = shares.filter(s => s.platform === platform).length;
+              return (
+                <div key={platform} className="flex items-center gap-4">
+                  <span className="text-sm text-gray-700 flex-1">{PLATFORM_LABELS[platform]}</span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="w-32 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-amber-700 h-1.5 rounded-full"
+                        style={{ width: shares.length > 0 ? `${(cnt / shares.length) * 100}%` : '0%' }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-gray-500 w-8 text-right font-medium">{cnt}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
