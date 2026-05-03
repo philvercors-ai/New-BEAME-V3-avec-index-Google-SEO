@@ -665,6 +665,9 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<Artwork | 'new' | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [reorderSaving, setReorderSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -692,6 +695,33 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
     setDeleting(null);
     load();
   };
+
+  const handleDragStart = (index: number) => setDragIndex(index);
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (index !== dragOverIndex) setDragOverIndex(index);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === targetIndex) {
+      setDragIndex(null); setDragOverIndex(null); return;
+    }
+    const reordered = [...artworks];
+    const [moved] = reordered.splice(dragIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+    const updated = reordered.map((art, i) => ({ ...art, sort_order: i }));
+    setArtworks(updated);
+    setDragIndex(null); setDragOverIndex(null);
+    setReorderSaving(true);
+    await Promise.all(updated.map(art =>
+      supabase.from('artworks').update({ sort_order: art.sort_order }).eq('id', art.id)
+    ));
+    setReorderSaving(false);
+  };
+
+  const handleDragEnd = () => { setDragIndex(null); setDragOverIndex(null); };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -753,6 +783,7 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
             <h1 className="text-3xl font-serif">Œuvres</h1>
             <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">
               {artworks.length} œuvre{artworks.length > 1 ? 's' : ''}
+              {reorderSaving && <span className="ml-3 text-amber-700">Enregistrement de l'ordre...</span>}
             </p>
           </div>
           <button
@@ -773,38 +804,54 @@ const ArtworkManager = ({ onLogout }: { onLogout: () => void }) => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {artworks.map(art => (
-              <div key={art.id} className="bg-white shadow-sm overflow-hidden group">
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                  <img src={art.image} alt={art.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
-                    <button
-                      onClick={() => setEditTarget(art)}
-                      className="bg-white text-gray-900 p-2.5 rounded hover:bg-amber-50 transition"
-                      title="Modifier"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(art.id)}
-                      disabled={deleting === art.id}
-                      className="bg-white text-red-500 p-2.5 rounded hover:bg-red-50 transition"
-                      title="Supprimer"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+          <>
+            <p className="text-[9px] uppercase tracking-widest text-gray-300 mb-4">Glisser-déposer pour réorganiser</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {artworks.map((art, index) => (
+                <div
+                  key={art.id}
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={e => handleDragOver(e, index)}
+                  onDrop={e => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`bg-white shadow-sm overflow-hidden group cursor-grab active:cursor-grabbing select-none transition-all duration-150
+                    ${dragIndex === index ? 'opacity-40 scale-95 shadow-none' : ''}
+                    ${dragOverIndex === index && dragIndex !== index ? 'ring-2 ring-amber-700 ring-offset-2' : ''}
+                  `}
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                    <img src={art.image} alt={art.title} className="w-full h-full object-cover pointer-events-none" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
+                      <button
+                        onMouseDown={e => e.stopPropagation()}
+                        onClick={() => setEditTarget(art)}
+                        className="bg-white text-gray-900 p-2.5 rounded hover:bg-amber-50 transition"
+                        title="Modifier"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onMouseDown={e => e.stopPropagation()}
+                        onClick={() => handleDelete(art.id)}
+                        disabled={deleting === art.id}
+                        className="bg-white text-red-500 p-2.5 rounded hover:bg-red-50 transition"
+                        title="Supprimer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-serif italic text-lg text-gray-900">{art.title}</h3>
+                    <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">
+                      {art.category} · {art.dimensions} · {art.price}
+                    </p>
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-serif italic text-lg text-gray-900">{art.title}</h3>
-                  <p className="text-gray-400 text-[10px] uppercase tracking-widest mt-1">
-                    {art.category} · {art.dimensions} · {art.price}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
         </>}
       </main>
