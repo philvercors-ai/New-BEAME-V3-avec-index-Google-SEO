@@ -1,4 +1,3 @@
-const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
@@ -23,7 +22,7 @@ function getIndexHtml() {
 function injectOG(html, { title, description, image, url }) {
   return html
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*("/g,       `$1${esc(description)}$2`)
+    .replace(/(<meta name="description" content=")[^"]*(")/,       `$1${esc(description)}$2`)
     .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${esc(title)}$2`)
     .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${esc(description)}$2`)
     .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${esc(image)}$2`)
@@ -44,16 +43,20 @@ module.exports = async (req, res) => {
     return res.status(302).end();
   }
 
-  const supabase = createClient(
-    process.env.REACT_APP_SUPABASE_URL,
-    process.env.REACT_APP_SUPABASE_ANON_KEY
-  );
+  const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+  const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-  const { data: artwork } = await supabase
-    .from('artworks')
-    .select('title, image, technique, support, dimensions, description')
-    .eq('slug', slug)
-    .single();
+  let artwork = null;
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/artworks?slug=eq.${encodeURIComponent(slug)}&select=title,image,technique,support,dimensions,description&limit=1`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (r.ok) {
+      const data = await r.json();
+      artwork = data[0] || null;
+    }
+  } catch (_) {}
 
   if (!artwork) {
     res.setHeader('Location', '/galerie');
@@ -75,7 +78,7 @@ module.exports = async (req, res) => {
     return res.status(200).send(html);
   }
 
-  // Fallback si index.html non disponible (ne devrait pas arriver)
+  // Fallback si index.html non disponible
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 's-maxage=3600');
   res.status(200).send(`<!DOCTYPE html>
