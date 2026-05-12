@@ -3,17 +3,7 @@
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    {
-      "source": "/galerie/:slug",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "facebookexternalhit|Twitterbot|LinkedInBot|Pinterest|WhatsApp|Slackbot|Applebot|vkShare|W3C_Validator"
-        }
-      ],
-      "destination": "/api/og?slug=:slug"
-    },
+    { "source": "/galerie/:slug", "destination": "/api/og?slug=:slug" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

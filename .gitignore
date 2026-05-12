@@ -1,5 +1,6 @@
 node_modules
 .vercel
 build
+api/index.html
 .env.local
 .env*.local
