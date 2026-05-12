@@ -326,6 +326,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   pinterest: 'Pinterest',
   facebook: 'Facebook',
   whatsapp: 'WhatsApp',
+  instagram: 'Instagram',
   copy: 'Lien copié',
 };
 
@@ -452,7 +453,7 @@ const AnalyticsPanel = () => {
           <p className="text-gray-400 text-[10px] uppercase tracking-widest">Aucun partage enregistré</p>
         ) : (
           <div className="space-y-3">
-            {(['pinterest', 'facebook', 'whatsapp', 'copy'] as const).map(platform => {
+            {(['pinterest', 'facebook', 'whatsapp', 'instagram', 'copy'] as const).map(platform => {
               const cnt = shares.filter(s => s.platform === platform).length;
               return (
                 <div key={platform} className="flex items-center gap-4">

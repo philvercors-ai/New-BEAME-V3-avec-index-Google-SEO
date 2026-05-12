@@ -434,8 +434,27 @@ const InfoImage = () => {
   const { slug } = useParams();
   const [artwork, setArtwork] = useState<Artwork | null | undefined>(undefined);
   const [copied, setCopied] = useState(false);
+  const [nativeShared, setNativeShared] = useState(false);
   const trackShare = (platform: string) => {
     supabase.from('share_events').insert({ page: `/galerie/${slug}`, platform }).then(() => {});
+  };
+  const handleInstagramShare = async (artworkTitle: string, artworkSlug: string) => {
+    trackShare('instagram');
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${artworkTitle} — BÉAME`,
+          text: `${artworkTitle} par BÉAME, artiste peintre`,
+          url: `${SITE_URL}/galerie/${artworkSlug}`,
+        });
+        setNativeShared(true);
+        setTimeout(() => setNativeShared(false), 2000);
+      } catch (_) {}
+    } else {
+      navigator.clipboard.writeText(`${SITE_URL}/galerie/${artworkSlug}`);
+      setNativeShared(true);
+      setTimeout(() => setNativeShared(false), 2000);
+    }
   };
 
   useEffect(() => {
@@ -517,37 +536,44 @@ const InfoImage = () => {
           </Link>
           <div className="pt-2 border-t border-gray-100">
             <span className="text-[9px] uppercase tracking-widest text-gray-400 block mb-3">Partager</span>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-5 gap-1.5">
               <a
                 href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}&media=${encodeURIComponent(artwork.image)}&description=${encodeURIComponent(`${artwork.title} — ${artwork.technique} — BÉAME artiste peintre`)}`}
                 target="_blank" rel="noreferrer" aria-label="Partager sur Pinterest"
                 onClick={() => trackShare('pinterest')}
                 className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-red-50 hover:text-red-600 text-gray-500 transition rounded-sm">
-                <PinterestIcon size={20} />
-                <span className="text-[8px] uppercase tracking-widest">Pinterest</span>
+                <PinterestIcon size={18} />
+                <span className="text-[7px] uppercase tracking-widest">Pinterest</span>
               </a>
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}/galerie/${artwork.slug}`)}`}
                 target="_blank" rel="noreferrer" aria-label="Partager sur Facebook"
                 onClick={() => trackShare('facebook')}
                 className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-blue-50 hover:text-blue-600 text-gray-500 transition rounded-sm">
-                <FacebookIcon size={20} />
-                <span className="text-[8px] uppercase tracking-widest">Facebook</span>
+                <FacebookIcon size={18} />
+                <span className="text-[7px] uppercase tracking-widest">Facebook</span>
               </a>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(`${artwork.title} par BÉAME — ${SITE_URL}/galerie/${artwork.slug}`)}`}
                 target="_blank" rel="noreferrer" aria-label="Partager sur WhatsApp"
                 onClick={() => trackShare('whatsapp')}
                 className="flex flex-col items-center gap-1.5 py-3 bg-gray-50 hover:bg-green-50 hover:text-green-600 text-gray-500 transition rounded-sm">
-                <WhatsAppIcon size={20} />
-                <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>
+                <WhatsAppIcon size={18} />
+                <span className="text-[7px] uppercase tracking-widest">WhatsApp</span>
               </a>
+              <button
+                onClick={() => handleInstagramShare(artwork.title, artwork.slug)}
+                aria-label="Partager sur Instagram"
+                className={`flex flex-col items-center gap-1.5 py-3 rounded-sm transition ${nativeShared ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 hover:bg-pink-50 hover:text-pink-600 text-gray-500'}`}>
+                <InstagramIcon size={18} />
+                <span className="text-[7px] uppercase tracking-widest">{nativeShared ? 'Partagé !' : 'Instagram'}</span>
+              </button>
               <button
                 onClick={() => { trackShare('copy'); navigator.clipboard.writeText(`${SITE_URL}/galerie/${artwork.slug}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                 aria-label="Copier le lien"
                 className={`flex flex-col items-center gap-1.5 py-3 rounded-sm transition ${copied ? 'bg-amber-50 text-amber-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-500'}`}>
-                <Link2 size={20} />
-                <span className="text-[8px] uppercase tracking-widest">{copied ? 'Copié !' : 'Lien'}</span>
+                <Link2 size={18} />
+                <span className="text-[7px] uppercase tracking-widest">{copied ? 'Copié !' : 'Lien'}</span>
               </button>
             </div>
           </div>
